@@ -1,5 +1,6 @@
 import replace from 'rollup-plugin-replace';
 import typescript from 'rollup-plugin-typescript2';
+import ttypescript from 'ttypescript';
 import configs from './config';
 
 const externals = [
@@ -7,6 +8,7 @@ const externals = [
 ];
 
 const genTsPlugin = (configOpts) => typescript({
+    typescript: ttypescript,
     useTsconfigDeclarationDir: true,
     tsconfigOverride: {
         compilerOptions: {

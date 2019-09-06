@@ -25,7 +25,8 @@
         "dom",
         "dom.iterable",
         "scripthost"
-      ]
+      ],
+      "plugins": [{ "transform": "ts-nameof", "type": "raw" }]
     },
     "include": [
       "src/**/*.ts",
