@@ -13,7 +13,8 @@
       "types": [
         "mocha",
         "chai",
-        "node"
+        "node",
+        "ts-nameof"
       ],
       "paths": {
         "@/*": [
