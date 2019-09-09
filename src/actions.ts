@@ -81,8 +81,8 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         nameof<Chai.VuexCommits>((x) => x.in),
         nameof<Chai.VuexCommits>((x) => x.containing),
         nameof<Chai.VuexAssertion>((x) => x.as),
-    ].forEach((x) => {
-        Assertion.addProperty(x);
+    ].forEach((chain) => {
+        Assertion.addProperty(chain);
     });
 
     Assertion.addMethod(nameof<Chai.Assertion>((x) => x.actionPayload), function (payload: any) {
