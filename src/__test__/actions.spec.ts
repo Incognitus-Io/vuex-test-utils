@@ -124,17 +124,7 @@ describe('Actions.ts', () => {
                     expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
                 }
             });
-
-            it('Should fail if checking payload before dispatch', () => {
-                try {
-                    expect(actions.foobar).payload({});
-                    assert.fail();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected 'dispatch' to be asserted before 'payload'`);
-                }
             });
-        });
 
         describe('in.order', () => {
             it('Should check order loosely', () => {
