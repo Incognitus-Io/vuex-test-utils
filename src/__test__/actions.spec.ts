@@ -244,6 +244,82 @@ describe('Actions.ts', () => {
             });
         });
 
+        describe('is.silent', () => {
+            it('Should fail when no options are provided', () => {
+                actions.foobar = (ctx) => {
+                    ctx.commit('loading', undefined, undefined);
+                };
+
+                try {
+                    expect(actions.foobar).to.commit('loading').as.silent;
+                    assert.fail();
+                } catch (err) {
+                    const failedAssert = err as AssertionError;
+                    expect(failedAssert.message).to.eq(`expected to be a silent commit, but found no commit options`);
+                }
+            });
+
+            it('Should fail when not a root commit but expected', () => {
+                actions.foobar = (ctx) => {
+                    ctx.commit('loading', undefined, { silent: false });
+                };
+
+                try {
+                    expect(actions.foobar).to.commit('loading').is.silent;
+                    assert.fail();
+                } catch (err) {
+                    const failedAssert = err as AssertionError;
+                    expect(failedAssert.message).to.eq(`expected false to be true`);
+                }
+            });
+
+            it('Should pass when is a root commit', () => {
+                actions.foobar = (ctx) => {
+                    ctx.commit('loading', undefined, { silent: true });
+                };
+
+                expect(actions.foobar).to.commit('loading').is.silent;
+            });
+        });
+
+        describe('is.not.silent', () => {
+            it('Should fail when no options are provided', () => {
+                actions.foobar = (ctx) => {
+                    ctx.commit('loading', undefined, undefined);
+                };
+
+                try {
+                    expect(actions.foobar).to.commit('loading').is.not.silent;
+                    assert.fail();
+                } catch (err) {
+                    const failedAssert = err as AssertionError;
+                    expect(failedAssert.message).to.eq(`expected to be a silent commit, but found no commit options`);
+                }
+            });
+
+            it('Should fail when is root commit but not expected', () => {
+                actions.foobar = (ctx) => {
+                    ctx.commit('loading', undefined, { silent: true });
+                };
+
+                try {
+                    expect(actions.foobar).to.commit('loading').is.not.silent;
+                    assert.fail();
+                } catch (err) {
+                    const failedAssert = err as AssertionError;
+                    expect(failedAssert.message).to.eq(`expected true to be false`);
+                }
+            });
+
+            it('Should pass when is not root commit', () => {
+                actions.foobar = (ctx) => {
+                    ctx.commit('loading', undefined, { silent: false });
+                };
+
+                expect(actions.foobar).to.commit('loading').is.not.silent;
+            });
+        });
+
         describe('Setup', () => {
             describe('actionPayload', () => {
                 it('Should execute the action with the payload', () => {

@@ -21,6 +21,7 @@ declare global {
             is: VuexAssertion;
             not: VuexAssertion;
             root: VuexAssertion;
+            silent: VuexAssertion;
             containing: VuexContaining;
         }
 
@@ -69,6 +70,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
             orderedCommitedType: 'expected #{exp} commit but found #{act}',
             commitedPayload: 'expected payload #{exp} but found #{act}',
             missingRootCommitOptions: 'expected to be a root commit, but found no commit options',
+            missingSilentCommitOptions: 'expected to be a silent commit, but found no commit options',
         },
         notExpected: {
             commitedType: 'expected #{exp} to not be commmited but found #{act} commit(s)',
@@ -163,6 +165,19 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         }
 
         const test = new Assertion(currentCommit.options.root).to.be;
+        // tslint:disable-next-line:no-unused-expression
+        (negated) ? test.false : test.true;
+    });
+
+    Assertion.addProperty(nameof<Chai.VuexAssertion>((x) => x.silent), function () {
+        const currentCommit: ObservedCommits = _.flag(this, store.currentCommit);
+        const negated = _.flag(this, store.not) || false;
+
+        if (!currentCommit.options) {
+            throw new AssertionError({ message: messages.expected.missingSilentCommitOptions });
+        }
+
+        const test = new Assertion(currentCommit.options.silent).to.be;
         // tslint:disable-next-line:no-unused-expression
         (negated) ? test.false : test.true;
     });
