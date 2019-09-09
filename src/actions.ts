@@ -127,11 +127,10 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     });
 
     Assertion.addMethod(nameof<Chai.VuexContaining>((x) => x.payload), function (payload: any) {
-        const executedCommits: ObservedCommits[] = _.flag(this, 'executedCommits');
-
-        if (!executedCommits) {
-            throw new AssertionError({ message: `expected 'dispatch' to be asserted before 'payload'` });
-        }
+        const currentCommit: ObservedCommits =  _.flag(this, store.currentCommit);
+        const executedCommits: ObservedCommits[] = (!currentCommit)
+            ? _.flag(this, store.executedCommits)
+            : [currentCommit];
 
         const executedPayloads = executedCommits.map((x) => x.payload);
         const results = executedPayloads.some((x) => _.eql(payload, x));

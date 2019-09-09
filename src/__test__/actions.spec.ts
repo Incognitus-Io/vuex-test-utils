@@ -124,6 +124,19 @@ describe('Actions.ts', () => {
                     expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
                 }
             });
+
+            it('Should allow checking commit and payload', () => {
+                const expectedCommit = 'fizzbuzz';
+                const expectedPayload = {
+                    foo: 'bar',
+                };
+                actions.foobar = (ctx) => {
+                    ctx.commit('not what you`re looking for', { big: 'bang' });
+                    ctx.commit(expectedCommit, expectedPayload);
+                };
+
+                expect(actions.foobar).to.commit(expectedCommit).containing.payload(expectedPayload);
+            });
         });
 
         describe('in.order', () => {
