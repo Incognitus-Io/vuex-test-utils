@@ -124,7 +124,7 @@ describe('Actions.ts', () => {
                     expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
                 }
             });
-            });
+        });
 
         describe('in.order', () => {
             it('Should check order loosely', () => {
@@ -152,6 +152,54 @@ describe('Actions.ts', () => {
                     const failedAssert = err as AssertionError;
                     expect(failedAssert.message).to.eq(`expected 'loaded' commit but found 'foobar'`);
                 }
+            });
+        });
+
+        describe('Setup', () => {
+            describe('actionPayload', () => {
+                it('Should execute the action with the payload', () => {
+                    let actualActionPayload: any;
+                    const expectedActionPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = (_, payload) => {
+                        actualActionPayload = payload;
+                    };
+
+                    expect(actions.foobar).with.actionPayload(expectedActionPayload).commit;
+
+                    expect(actualActionPayload).to.eql(expectedActionPayload);
+                });
+            });
+
+            describe('actonContext', () => {
+                it('Should allow setting state', () => {
+                    let actualActionState: any;
+                    const expectedActionState = {
+                        fizz: 'buzz',
+                    };
+                    actions.foobar = (ctx, _?) => {
+                        actualActionState = ctx.state;
+                    };
+
+                    expect(actions.foobar).with.actionContext({ state: expectedActionState }).commit;
+
+                    expect(actualActionState).to.eql(expectedActionState);
+                });
+
+                it('Should allow setting root state', () => {
+                    let actualActionState: any;
+                    const expectedActionState = {
+                        fizz: 'buzz',
+                    };
+                    actions.foobar = (ctx, _?) => {
+                        actualActionState = ctx.rootState;
+                    };
+
+                    expect(actions.foobar).with.actionContext({ rootState: expectedActionState }).commit;
+
+                    expect(actualActionState).to.eql(expectedActionState);
+                });
             });
         });
 
