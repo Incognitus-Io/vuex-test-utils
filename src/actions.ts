@@ -21,12 +21,17 @@ declare global {
             is: VuexAssertion;
             not: VuexAssertion;
             root: VuexAssertion;
-            silent: VuexAssertion;
             containing: VuexContaining;
         }
 
+        interface VuexCommitAssertions extends VuexAssertion {
+            is: VuexCommitAssertions;
+            not: VuexCommitAssertions;
+            silent: VuexCommitAssertions;
+        }
+
         interface VuexCommits {
-            (type: string): VuexAssertion;
+            (type: string): VuexCommitAssertions;
             in: VuexOrder;
             containing: VuexContaining;
         }
@@ -169,7 +174,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         (negated) ? test.false : test.true;
     });
 
-    Assertion.addProperty(nameof<Chai.VuexAssertion>((x) => x.silent), function () {
+    Assertion.addProperty(nameof<Chai.VuexCommitAssertions>((x) => x.silent), function () {
         const currentCommit: ObservedCommits = _.flag(this, store.currentCommit);
         const negated = _.flag(this, store.not) || false;
 

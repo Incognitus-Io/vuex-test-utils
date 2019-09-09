@@ -251,7 +251,7 @@ describe('Actions.ts', () => {
                 };
 
                 try {
-                    expect(actions.foobar).to.commit('loading').as.silent;
+                    expect(actions.foobar).to.commit('loading').is.silent;
                     assert.fail();
                 } catch (err) {
                     const failedAssert = err as AssertionError;
