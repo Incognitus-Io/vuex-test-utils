@@ -94,229 +94,231 @@ describe('Actions.ts', () => {
 
                 expect(actions.foobar).to.commit('foobar');
             });
-        });
 
-        describe('payload', () => {
-            it('Should commit with a payload', () => {
-                const expectedPayload = {
-                    foo: 'bar',
-                };
-                actions.foobar = (ctx) => {
-                    ctx.commit('fizzbuzz', expectedPayload);
-                };
+            describe('payload', () => {
+                it('Should commit with a payload', () => {
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = (ctx) => {
+                        ctx.commit('fizzbuzz', expectedPayload);
+                    };
 
-                expect(actions.foobar).to.commit.containing.payload(expectedPayload);
-            });
-
-            it('Should fail when commit payload does not match', () => {
-                const expectedPayload = {
-                    foo: 'bar',
-                };
-                actions.foobar = (ctx) => {
-                    ctx.commit('fizzbuzz', {});
-                };
-
-                try {
                     expect(actions.foobar).to.commit.containing.payload(expectedPayload);
-                    throw new Error();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
-                }
+                });
+
+                it('Should fail when commit payload does not match', () => {
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = (ctx) => {
+                        ctx.commit('fizzbuzz', {});
+                    };
+
+                    try {
+                        expect(actions.foobar).to.commit.containing.payload(expectedPayload);
+                        throw new Error();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
+                    }
+                });
+
+                it('Should allow checking commit and payload', () => {
+                    const expectedCommit = 'fizzbuzz';
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = (ctx) => {
+                        ctx.commit('not what you`re looking for', { big: 'bang' });
+                        ctx.commit(expectedCommit, expectedPayload);
+                    };
+
+                    expect(actions.foobar).to.commit(expectedCommit).containing.payload(expectedPayload);
+                });
             });
 
-            it('Should allow checking commit and payload', () => {
-                const expectedCommit = 'fizzbuzz';
-                const expectedPayload = {
-                    foo: 'bar',
-                };
-                actions.foobar = (ctx) => {
-                    ctx.commit('not what you`re looking for', { big: 'bang' });
-                    ctx.commit(expectedCommit, expectedPayload);
-                };
+            describe('in.order', () => {
+                it('Should check order loosely', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading');
+                        ctx.commit('fizzbuzz');
+                        ctx.commit('foobar');
+                        ctx.commit('loaded');
+                    };
 
-                expect(actions.foobar).to.commit(expectedCommit).containing.payload(expectedPayload);
+                    expect(actions.foobar).to.commit.in.order('fizzbuzz', 'foobar');
+                });
+
+                it('Should when checking order fail when unexpected commit between expected commits', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading');
+                        ctx.commit('foobar');
+                        ctx.commit('loaded');
+                    };
+
+                    try {
+                        expect(actions.foobar).to.commit.in.order('loading', 'loaded');
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected 'loaded' commit but found 'foobar'`);
+                    }
+                });
             });
-        });
 
-        describe('in.order', () => {
-            it('Should check order loosely', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading');
-                    ctx.commit('fizzbuzz');
-                    ctx.commit('foobar');
-                    ctx.commit('loaded');
-                };
+            describe('as.root', () => {
+                it('Should fail when no options are provided', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, undefined);
+                    };
 
-                expect(actions.foobar).to.commit.in.order('fizzbuzz', 'foobar');
-            });
+                    try {
+                        expect(actions.foobar).to.commit('loading').as.root;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected to be a root commit, but found no commit options`);
+                    }
+                });
 
-            it('Should when checking order fail when unexpected commit between expected commits', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading');
-                    ctx.commit('foobar');
-                    ctx.commit('loaded');
-                };
+                it('Should fail when not a root commit but expected', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, { root: false });
+                    };
 
-                try {
-                    expect(actions.foobar).to.commit.in.order('loading', 'loaded');
-                    assert.fail();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected 'loaded' commit but found 'foobar'`);
-                }
-            });
-        });
+                    try {
+                        expect(actions.foobar).to.commit('loading').as.root;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected false to be true`);
+                    }
+                });
 
-        describe('as.root', () => {
-            it('Should fail when no options are provided', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, undefined);
-                };
+                it('Should pass when is a root commit', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, { root: true });
+                    };
 
-                try {
                     expect(actions.foobar).to.commit('loading').as.root;
-                    assert.fail();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected to be a root commit, but found no commit options`);
-                }
+                });
             });
 
-            it('Should fail when not a root commit but expected', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, { root: false });
-                };
+            describe('not.as.root', () => {
+                it('Should fail when no options are provided', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, undefined);
+                    };
 
-                try {
-                    expect(actions.foobar).to.commit('loading').as.root;
-                    assert.fail();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected false to be true`);
-                }
-            });
+                    try {
+                        expect(actions.foobar).to.commit('loading').not.as.root;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected to be a root commit, but found no commit options`);
+                    }
+                });
 
-            it('Should pass when is a root commit', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, { root: true });
-                };
+                it('Should fail when is root commit but not expected', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, { root: true });
+                    };
 
-                expect(actions.foobar).to.commit('loading').as.root;
-            });
-        });
+                    try {
+                        expect(actions.foobar).to.commit('loading').not.as.root;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected true to be false`);
+                    }
+                });
 
-        describe('not.as.root', () => {
-            it('Should fail when no options are provided', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, undefined);
-                };
+                it('Should pass when is not root commit', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, { root: false });
+                    };
 
-                try {
                     expect(actions.foobar).to.commit('loading').not.as.root;
-                    assert.fail();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected to be a root commit, but found no commit options`);
-                }
+                });
             });
 
-            it('Should fail when is root commit but not expected', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, { root: true });
-                };
+            describe('is.silent', () => {
+                it('Should fail when no options are provided', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, undefined);
+                    };
 
-                try {
-                    expect(actions.foobar).to.commit('loading').not.as.root;
-                    assert.fail();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected true to be false`);
-                }
-            });
+                    try {
+                        expect(actions.foobar).to.commit('loading').is.silent;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message)
+                            .to.eq(`expected to be a silent commit, but found no commit options`);
+                    }
+                });
 
-            it('Should pass when is not root commit', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, { root: false });
-                };
+                it('Should fail when not a root commit but expected', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, { silent: false });
+                    };
 
-                expect(actions.foobar).to.commit('loading').not.as.root;
-            });
-        });
+                    try {
+                        expect(actions.foobar).to.commit('loading').is.silent;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected false to be true`);
+                    }
+                });
 
-        describe('is.silent', () => {
-            it('Should fail when no options are provided', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, undefined);
-                };
+                it('Should pass when is a root commit', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, { silent: true });
+                    };
 
-                try {
                     expect(actions.foobar).to.commit('loading').is.silent;
-                    assert.fail();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected to be a silent commit, but found no commit options`);
-                }
+                });
             });
 
-            it('Should fail when not a root commit but expected', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, { silent: false });
-                };
+            describe('is.not.silent', () => {
+                it('Should fail when no options are provided', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, undefined);
+                    };
 
-                try {
-                    expect(actions.foobar).to.commit('loading').is.silent;
-                    assert.fail();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected false to be true`);
-                }
-            });
+                    try {
+                        expect(actions.foobar).to.commit('loading').is.not.silent;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message)
+                            .to.eq(`expected to be a silent commit, but found no commit options`);
+                    }
+                });
 
-            it('Should pass when is a root commit', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, { silent: true });
-                };
+                it('Should fail when is root commit but not expected', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, { silent: true });
+                    };
 
-                expect(actions.foobar).to.commit('loading').is.silent;
-            });
-        });
+                    try {
+                        expect(actions.foobar).to.commit('loading').is.not.silent;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected true to be false`);
+                    }
+                });
 
-        describe('is.not.silent', () => {
-            it('Should fail when no options are provided', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, undefined);
-                };
+                it('Should pass when is not root commit', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.commit('loading', undefined, { silent: false });
+                    };
 
-                try {
                     expect(actions.foobar).to.commit('loading').is.not.silent;
-                    assert.fail();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected to be a silent commit, but found no commit options`);
-                }
-            });
-
-            it('Should fail when is root commit but not expected', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, { silent: true });
-                };
-
-                try {
-                    expect(actions.foobar).to.commit('loading').is.not.silent;
-                    assert.fail();
-                } catch (err) {
-                    const failedAssert = err as AssertionError;
-                    expect(failedAssert.message).to.eq(`expected true to be false`);
-                }
-            });
-
-            it('Should pass when is not root commit', () => {
-                actions.foobar = (ctx) => {
-                    ctx.commit('loading', undefined, { silent: false });
-                };
-
-                expect(actions.foobar).to.commit('loading').is.not.silent;
+                });
             });
         });
 
