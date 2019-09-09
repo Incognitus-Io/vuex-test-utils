@@ -322,6 +322,31 @@ describe('Actions.ts', () => {
             });
         });
 
+        describe('dispatch', () => {
+            it('Should dispatch an action', () => {
+                actions.foobar = async (ctx) => {
+                    await ctx.dispatch('fizzbuzz');
+                };
+
+                expect(actions.foobar).to.dispatch('fizzbuzz');
+            });
+
+            it('Should fail when dispatch types do not match', () => {
+                const expectedDispatch = 'somthing not right';
+                actions.foobar = async (ctx) => {
+                    await ctx.dispatch('fizzbuzz');
+                };
+
+                try {
+                    expect(actions.foobar).to.dispatch(expectedDispatch);
+                    assert.fail();
+                } catch (err) {
+                    const failedAssert = err as AssertionError;
+                    expect(failedAssert.message).to.eq(`expected '${expectedDispatch}' dispatch but found 'fizzbuzz' dispatch(s)`);
+                }
+            });
+        });
+
         describe('Setup', () => {
             describe('actionPayload', () => {
                 it('Should execute the action with the payload', () => {
@@ -397,9 +422,5 @@ describe('Actions.ts', () => {
                 });
             });
         });
-
-        // describe('Commit', () => {
-        //     it('')
-        // });
     });
 });
