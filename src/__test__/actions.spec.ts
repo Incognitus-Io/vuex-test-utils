@@ -22,7 +22,7 @@ describe('Actions.ts', () => {
 
         beforeEach(() => {
             actions = {
-                foobar(ctx, payload) { return; },
+                foobar(_, __) { return; },
             };
         });
 
