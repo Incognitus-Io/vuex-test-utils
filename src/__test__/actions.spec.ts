@@ -324,8 +324,8 @@ describe('Actions.ts', () => {
 
         describe('dispatch', () => {
             it('Should dispatch an action', () => {
-                actions.foobar = async (ctx) => {
-                    await ctx.dispatch('fizzbuzz');
+                actions.foobar = (ctx) => {
+                    ctx.dispatch('fizzbuzz');
                 };
 
                 expect(actions.foobar).to.dispatch('fizzbuzz');
@@ -334,7 +334,7 @@ describe('Actions.ts', () => {
             it('Should fail when dispatch types do not match', () => {
                 const expectedDispatch = 'somthing not right';
                 actions.foobar = async (ctx) => {
-                    await ctx.dispatch('fizzbuzz');
+                    ctx.dispatch('fizzbuzz');
                 };
 
                 try {
@@ -344,6 +344,96 @@ describe('Actions.ts', () => {
                     const failedAssert = err as AssertionError;
                     expect(failedAssert.message).to.eq(`expected '${expectedDispatch}' dispatch but found 'fizzbuzz' dispatch(s)`);
                 }
+            });
+
+            it('Should chain for multiple dispatches', () => {
+                actions.foobar = (ctx) => {
+                    ctx.dispatch('fizzbuzz');
+                    ctx.dispatch('foobar');
+                };
+                expect(actions.foobar)
+                    .to.dispatch('fizzbuzz')
+                    .and.dispatch('foobar');
+            });
+
+            it('Should only run the action once per expectation', () => {
+                let count = 0;
+
+                actions.foobar = (ctx) => {
+                    ctx.dispatch('1');
+                    ctx.dispatch('2');
+                    count++;
+                };
+                expect(actions.foobar).to.dispatch('1').and.dispatch('2');
+
+                expect(count).to.eq(1);
+            });
+
+            it('Should fail if checking the same dispatch type multiple times', () => {
+                actions.foobar = (ctx) => {
+                    ctx.dispatch('foobar');
+                };
+
+                try {
+                    expect(actions.foobar).to.dispatch('foobar').and.dispatch('foobar');
+                    assert.fail();
+                } catch (err) {
+                    const failedAssert = err as AssertionError;
+                    expect(failedAssert.message).to.eq(`expected 'foobar' dispatch but found '' dispatch(s)`);
+                }
+            });
+
+            it('Should find the specified dispatch between multiple dispatches', () => {
+                actions.foobar = (ctx) => {
+                    ctx.dispatch('loading');
+                    ctx.dispatch('foobar');
+                    ctx.dispatch('loaded');
+                };
+
+                expect(actions.foobar).to.dispatch('foobar');
+            });
+
+            describe('payload', () => {
+                it('Should dispatch with a payload', () => {
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = (ctx) => {
+                        ctx.dispatch('fizzbuzz', expectedPayload);
+                    };
+
+                    expect(actions.foobar).to.dispatch.containing.payload(expectedPayload);
+                });
+
+                it('Should fail when payload does not match', () => {
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = (ctx) => {
+                        ctx.dispatch('fizzbuzz', {});
+                    };
+
+                    try {
+                        expect(actions.foobar).to.dispatch.containing.payload(expectedPayload);
+                        throw new Error();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
+                    }
+                });
+
+                it('Should allow checking dispatch and payload', () => {
+                    const expectedDispatch = 'fizzbuzz';
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = (ctx) => {
+                        ctx.dispatch('not what you`re looking for', { big: 'bang' });
+                        ctx.dispatch(expectedDispatch, expectedPayload);
+                    };
+
+                    expect(actions.foobar).to.dispatch(expectedDispatch).containing.payload(expectedPayload);
+                });
             });
         });
 

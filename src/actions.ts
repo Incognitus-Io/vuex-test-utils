@@ -13,7 +13,7 @@ declare global {
         }
 
         // interface PromisedAssertion {
-        //     displayed: PromisedAssertion;
+        // displayed: PromisedAssertion;
         // }
 
         interface VuexAssertion extends Assertion {
@@ -70,7 +70,7 @@ interface ObservedCommit extends ObservedBase {
     options?: CommitOptions;
 }
 type commitFn = (_: string, __?: any, ___?: CommitOptions) => void;
-type dispatchFn = (_: string, __?: any, ___?: DispatchOptions) => Promise<any>;
+type dispatchFn = (_: string, __?: any, ___?: DispatchOptions) => any;
 type actionFn = (_: ActionContext<any, any>, __?: any) => void | Promise<void>;
 
 export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
@@ -98,7 +98,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         notExpected: {
             commitedType: 'expected #{exp} to not be commmited but found #{act} commit(s)',
             orderedCommitedType: 'expected #{exp} to not be commited but found #{act}',
-            commitedPayload: 'expected payload #{exp} to not be commmited but found #{act}',
+            payload: 'expected payload #{exp} to not be defined but found #{act}',
             dispatchType: 'expected #{exp} to not be dispatched but found #{act} dispatches(s)',
             orderedDispatchType: 'expected #{exp} to not be dispatched but found #{act}',
         },
@@ -185,16 +185,25 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     });
 
     Assertion.addMethod(nameof<Chai.VuexContaining>((x) => x.payload), function (payload: any) {
-        const currentCommit: ObservedCommit = _.flag(this, store.currentCommit);
-        const executedCommits: ObservedCommit[] = (!currentCommit)
-            ? _.flag(this, store.executedCommits)
-            : [currentCommit];
+        const currentCommit: ObservedBase = _.flag(this, store.currentCommit);
+        const currentDispatch: ObservedBase = _.flag(this, store.currentDispatch);
+        const executedCommits: ObservedBase[] = _.flag(this, store.executedCommits);
+        const executedDispatches: ObservedBase[] = _.flag(this, store.executedDispatches);
 
-        const executedPayloads = executedCommits.map((x) => x.payload);
+        let executed: ObservedBase[];
+        if (currentCommit || currentDispatch) {
+            executed = [currentCommit || currentDispatch];
+        } else if (executedCommits  && executedCommits.length > 0) {
+            executed = executedCommits;
+        } else {
+            executed = executedDispatches;
+        }
+
+        const executedPayloads = executed.map((x) => x.payload);
         const results = executedPayloads.some((x) => _.eql(payload, x));
         this.assert(
             results,
-            messages.expected.payload, messages.notExpected.commitedPayload,
+            messages.expected.payload, messages.notExpected.payload,
             payload, executedPayloads,
         );
     });
@@ -259,7 +268,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     };
 
     const emitDispatch = (executedDispatches: ObservedDispatch[]): dispatchFn => {
-        return async (type: string, payload?: any, options?: DispatchOptions) => {
+        return (type: string, payload?: any, options?: DispatchOptions) => {
             executedDispatches.push({
                 type,
                 payload,
