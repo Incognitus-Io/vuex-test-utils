@@ -15,8 +15,17 @@ declare global {
         //     displayed: PromisedAssertion;
         // }
 
+        interface VuexAssertion extends Assertion {
+            and: VuexAssertion;
+            as: VuexAssertion;
+            is: VuexAssertion;
+            not: VuexAssertion;
+            root: VuexAssertion;
+            containing: VuexContaining;
+        }
+
         interface VuexCommits {
-            (type: string): Assertion;
+            (type: string): VuexAssertion;
             in: VuexOrder;
             containing: VuexContaining;
         }
@@ -39,6 +48,7 @@ declare global {
 interface ObservedCommits {
     type: string;
     payload?: any;
+    options?: CommitOptions;
 }
 type commitFn = (_: string, __?: any, ___?: CommitOptions) => void;
 type actionFn = (_: ActionContext<any, any>, __?: any) => void | Promise<void>;
@@ -47,6 +57,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     const Assertion = chai.Assertion;
 
     const store = {
+        not: 'negate',
         executedCommits: 'executedCommits',
         currentCommit: 'currentCommit',
         actionPayload: nameof<Chai.Assertion>((x) => x.actionPayload),
@@ -57,6 +68,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
             commitedType: 'expected #{exp} commit but found #{act} commit(s)',
             orderedCommitedType: 'expected #{exp} commit but found #{act}',
             commitedPayload: 'expected payload #{exp} but found #{act}',
+            missingRootCommitOptions: 'expected to be a root commit, but found no commit options',
         },
         notExpected: {
             commitedType: 'expected #{exp} to not be commmited but found #{act} commit(s)',
@@ -68,6 +80,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     [
         nameof<Chai.VuexCommits>((x) => x.in),
         nameof<Chai.VuexCommits>((x) => x.containing),
+        nameof<Chai.VuexAssertion>((x) => x.as),
     ].forEach((x) => {
         Assertion.addProperty(x);
     });
@@ -127,7 +140,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     });
 
     Assertion.addMethod(nameof<Chai.VuexContaining>((x) => x.payload), function (payload: any) {
-        const currentCommit: ObservedCommits =  _.flag(this, store.currentCommit);
+        const currentCommit: ObservedCommits = _.flag(this, store.currentCommit);
         const executedCommits: ObservedCommits[] = (!currentCommit)
             ? _.flag(this, store.executedCommits)
             : [currentCommit];
@@ -141,6 +154,19 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         );
     });
 
+    Assertion.addProperty(nameof<Chai.VuexAssertion>((x) => x.root), function () {
+        const currentCommit: ObservedCommits = _.flag(this, store.currentCommit);
+        const negated = _.flag(this, store.not) || false;
+
+        if (!currentCommit.options) {
+            throw new AssertionError({ message: messages.expected.missingRootCommitOptions });
+        }
+
+        const test = new Assertion(currentCommit.options.root).to.be;
+        // tslint:disable-next-line:no-unused-expression
+        (negated) ? test.false : test.true;
+    });
+
     const execAction = (action: actionFn, payload: any, obj: object) => {
         const executedCommits: ObservedCommits[] = [];
         const ctx = _.flag(obj, store.actionCtx) || {};
@@ -151,10 +177,11 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     };
 
     const emitCommit = (executedCommits: ObservedCommits[]): commitFn => {
-        return (type: string, payload?: any) => {
+        return (type: string, payload?: any, options?: CommitOptions) => {
             executedCommits.push({
                 type,
                 payload,
+                options,
             });
         };
     };
