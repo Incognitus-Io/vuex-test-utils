@@ -367,6 +367,34 @@ describe('Actions.ts', () => {
 
                     expect(actualActionState).to.eql(expectedActionState);
                 });
+
+                it('Should allow setting getters', () => {
+                    let actualActionGetters: any;
+                    const expectedActionGetters = {
+                        fizz: 'buzz',
+                    };
+                    actions.foobar = (ctx, _?) => {
+                        actualActionGetters = ctx.getters;
+                    };
+
+                    expect(actions.foobar).with.actionContext({ getters: expectedActionGetters }).commit;
+
+                    expect(actualActionGetters).to.eql(expectedActionGetters);
+                });
+
+                it('Should allow setting root getters', () => {
+                    let actualActionGetters: any;
+                    const expectedActionGetters = {
+                        fizz: 'buzz',
+                    };
+                    actions.foobar = (ctx, _?) => {
+                        actualActionGetters = ctx.rootGetters;
+                    };
+
+                    expect(actions.foobar).with.actionContext({ rootGetters: expectedActionGetters }).commit;
+
+                    expect(actualActionGetters).to.eql(expectedActionGetters);
+                });
             });
         });
 

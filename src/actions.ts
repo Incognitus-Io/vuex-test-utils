@@ -47,6 +47,8 @@ declare global {
         interface ActionCtx<S, R> {
             state?: S;
             rootState?: R;
+            getters?: any;
+            rootGetters?: any;
         }
     }
 }
