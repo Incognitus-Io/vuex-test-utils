@@ -502,6 +502,44 @@ describe('Actions.ts', () => {
                     expect(actions.foobar).to.dispatch('loading').as.root;
                 });
             });
+
+            describe('not.as.root', () => {
+                it('Should fail when no options are provided', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.dispatch('loading', undefined, undefined);
+                    };
+
+                    try {
+                        expect(actions.foobar).to.dispatch('loading').not.as.root;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected to be a root dispatch, but found no dispatch options`);
+                    }
+                });
+
+                it('Should fail when is root dispatch but not expected', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.dispatch('loading', undefined, { root: true });
+                    };
+
+                    try {
+                        expect(actions.foobar).to.dispatch('loading').not.as.root;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected true to be false`);
+                    }
+                });
+
+                it('Should pass when is not root dispatch', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.dispatch('loading', undefined, { root: false });
+                    };
+
+                    expect(actions.foobar).to.dispatch('loading').not.as.root;
+                });
+            });
         });
 
         describe('Setup', () => {
