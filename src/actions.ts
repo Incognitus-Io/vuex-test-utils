@@ -94,6 +94,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
             payload: 'expected payload #{exp} but found #{act}',
             missingRootCommitOptions: 'expected to be a root commit, but found no commit options',
             missingSilentCommitOptions: 'expected to be a silent commit, but found no commit options',
+            missingRootDispatchOptions: 'expected to be a root dispatch, but found no dispatch options',
             dispatchType: 'expected #{exp} dispatch but found #{act} dispatch(s)',
             orderedDispatchType: 'expected #{exp} dispatch but found #{act}',
         },
@@ -228,14 +229,24 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     });
 
     Assertion.addProperty(nameof<Chai.VuexAssertion>((x) => x.root), function () {
-        const currentCommit: ObservedCommit = _.flag(this, store.currentCommit);
+        let current: ObservedCommit | ObservedDispatch;
+        let msg: string;
+        const mode: actionMode = _.flag(this, store.actionMode);
         const negated = _.flag(this, store.not) || false;
 
-        if (!currentCommit.options) {
-            throw new AssertionError({ message: messages.expected.missingRootCommitOptions });
+        if (mode === 'commit') {
+            current = _.flag(this, store.currentCommit);
+            msg = messages.expected.missingRootCommitOptions;
+        } else {
+            current = _.flag(this, store.currentDispatch);
+            msg = messages.expected.missingRootDispatchOptions;
         }
 
-        const test = new Assertion(currentCommit.options.root).to.be;
+        if (!current.options) {
+            throw new AssertionError({ message: msg });
+        }
+
+        const test = new Assertion(current.options.root).to.be;
         // tslint:disable-next-line:no-unused-expression
         (negated) ? test.false : test.true;
     });
