@@ -72,6 +72,7 @@ interface ObservedCommit extends ObservedBase {
 type commitFn = (_: string, __?: any, ___?: CommitOptions) => void;
 type dispatchFn = (_: string, __?: any, ___?: DispatchOptions) => any;
 type actionFn = (_: ActionContext<any, any>, __?: any) => void | Promise<void>;
+type actionMode = 'commit' | 'dispatch';
 
 export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     const Assertion = chai.Assertion;
@@ -84,6 +85,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         currentDispatch: 'currentDispatch',
         actionPayload: nameof<Chai.Assertion>((x) => x.actionPayload),
         actionCtx: nameof<Chai.Assertion>((x) => x.actionContext),
+        actionMode: 'actionMode',
     };
     const messages = {
         expected: {
@@ -158,6 +160,7 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         );
     }, function () {
         execActionBehavior(this);
+        _.flag(this, store.actionMode, 'commit');
     });
 
     Assertion.addChainableMethod(nameof<Chai.Assertion>((x) => x.dispatch), function (type: string) {
@@ -182,21 +185,24 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         );
     }, function () {
         execActionBehavior(this);
+        _.flag(this, store.actionMode, 'dispatch');
     });
 
     Assertion.addMethod(nameof<Chai.VuexContaining>((x) => x.payload), function (payload: any) {
-        const currentCommit: ObservedBase = _.flag(this, store.currentCommit);
-        const currentDispatch: ObservedBase = _.flag(this, store.currentDispatch);
-        const executedCommits: ObservedBase[] = _.flag(this, store.executedCommits);
-        const executedDispatches: ObservedBase[] = _.flag(this, store.executedDispatches);
-
+        let current: ObservedBase;
         let executed: ObservedBase[];
-        if (currentCommit || currentDispatch) {
-            executed = [currentCommit || currentDispatch];
-        } else if (executedCommits  && executedCommits.length > 0) {
-            executed = executedCommits;
+        const mode: actionMode = _.flag(this, store.actionMode);
+
+        if (mode === 'commit') {
+            current = _.flag(this, store.currentCommit);
+            executed = (!current)
+                ? _.flag(this, store.executedCommits)
+                : [current];
         } else {
-            executed = executedDispatches;
+            current = _.flag(this, store.currentDispatch);
+            executed = (!current)
+                ? _.flag(this, store.executedDispatches)
+                : [current];
         }
 
         const executedPayloads = executed.map((x) => x.payload);
