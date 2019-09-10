@@ -123,17 +123,30 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     });
 
     Assertion.addMethod(nameof<Chai.VuexOrder>((x) => x.order), function (...types: string[]) {
-        const executedCommits: ObservedCommit[] = _.flag(this, store.executedCommits);
-        let executedTypes = executedCommits.map((x) => x.type);
+        let executed: ObservedBase[];
+        let failMessage: string;
+        let negFailMessage: string;
+        const mode: actionMode = _.flag(this, store.actionMode);
+
+        if (mode === 'commit') {
+            executed = _.flag(this, store.executedCommits);
+            failMessage = messages.expected.orderedCommitedType;
+            negFailMessage = messages.notExpected.orderedCommitedType;
+        } else {
+            executed = _.flag(this, store.executedDispatches);
+            failMessage = messages.expected.orderedDispatchType;
+            negFailMessage = messages.notExpected.orderedDispatchType;
+        }
+
+        let executedTypes = executed.map((x) => x.type);
 
         const firstCommitIdx = executedTypes.indexOf(types[0]);
         executedTypes = executedTypes.splice(firstCommitIdx, types.length);
 
-        executedTypes.forEach((executed, idx) => this.assert(
-            executed === types[idx],
-            messages.expected.orderedCommitedType,
-            messages.notExpected.orderedCommitedType,
-            types[idx], executed,
+        executedTypes.forEach((type, idx) => this.assert(
+            type === types[idx],
+            failMessage, negFailMessage,
+            types[idx], type,
             true,
         ));
     });

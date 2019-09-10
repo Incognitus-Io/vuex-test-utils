@@ -435,6 +435,35 @@ describe('Actions.ts', () => {
                     expect(actions.foobar).to.dispatch(expectedDispatch).containing.payload(expectedPayload);
                 });
             });
+
+            describe('in.order', () => {
+                it('Should check order loosely', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.dispatch('loading');
+                        ctx.dispatch('fizzbuzz');
+                        ctx.dispatch('foobar');
+                        ctx.dispatch('loaded');
+                    };
+
+                    expect(actions.foobar).to.dispatch.in.order('fizzbuzz', 'foobar');
+                });
+
+                it('Should fail when unexpected dispatch between expected dispatches', () => {
+                    actions.foobar = (ctx) => {
+                        ctx.dispatch('loading');
+                        ctx.dispatch('foobar');
+                        ctx.dispatch('loaded');
+                    };
+
+                    try {
+                        expect(actions.foobar).to.dispatch.in.order('loading', 'loaded');
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected 'loaded' dispatch but found 'foobar'`);
+                    }
+                });
+            });
         });
 
         describe('Setup', () => {
