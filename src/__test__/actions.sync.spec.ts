@@ -1,7 +1,8 @@
-import chai, { expect, assert } from 'chai';
-import { vuexChai } from '../actions';
+import chai, { assert, expect } from 'chai';
 import { ActionTree, ActionContext } from 'vuex';
 import { AssertionError } from 'assert';
+
+import { vuexChai } from '../actions';
 
 chai.use(vuexChai);
 
@@ -11,7 +12,7 @@ describe('Actions.ts', () => {
         version: string;
     }
     interface ModuleState {
-        version: string;
+        fizz: string;
     }
 
     describe('Synchronous action', () => {
@@ -32,7 +33,7 @@ describe('Actions.ts', () => {
                     ctx.commit('fizzbuzz');
                 };
 
-                expect(actions.foobar).to.commit('fizzbuzz');
+                expect.action(actions.foobar).to.commit('fizzbuzz');
             });
 
             it('Should fail when commit types do not match', () => {
@@ -42,7 +43,7 @@ describe('Actions.ts', () => {
                 };
 
                 try {
-                    expect(actions.foobar).to.commit(expectedCommit);
+                    expect.action(actions.foobar).to.commit(expectedCommit);
                     assert.fail();
                 } catch (err) {
                     const failedAssert = err as AssertionError;
@@ -55,7 +56,7 @@ describe('Actions.ts', () => {
                     ctx.commit('fizzbuzz');
                     ctx.commit('foobar');
                 };
-                expect(actions.foobar).to.commit('fizzbuzz').and.commit('foobar');
+                expect.action(actions.foobar).to.commit('fizzbuzz').and.commit('foobar');
             });
 
             it('Should only run the action once per expectation', () => {
@@ -66,7 +67,7 @@ describe('Actions.ts', () => {
                     ctx.commit('2');
                     count++;
                 };
-                expect(actions.foobar).to.commit('1').and.commit('2');
+                expect.action(actions.foobar).to.commit('1').and.commit('2');
 
                 expect(count).to.eq(1);
             });
@@ -77,7 +78,7 @@ describe('Actions.ts', () => {
                 };
 
                 try {
-                    expect(actions.foobar).to.commit('foobar').and.commit('foobar');
+                    expect.action(actions.foobar).to.commit('foobar').and.commit('foobar');
                     assert.fail();
                 } catch (err) {
                     const failedAssert = err as AssertionError;
@@ -92,7 +93,7 @@ describe('Actions.ts', () => {
                     ctx.commit('loaded');
                 };
 
-                expect(actions.foobar).to.commit('foobar');
+                expect.action(actions.foobar).to.commit('foobar');
             });
 
             describe('payload', () => {
@@ -104,7 +105,7 @@ describe('Actions.ts', () => {
                         ctx.commit('fizzbuzz', expectedPayload);
                     };
 
-                    expect(actions.foobar).to.commit.containing.payload(expectedPayload);
+                    expect.action(actions.foobar).to.commit.containing.payload(expectedPayload);
                 });
 
                 it('Should fail when commit payload does not match', () => {
@@ -116,7 +117,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.commit.containing.payload(expectedPayload);
+                        expect.action(actions.foobar).to.commit.containing.payload(expectedPayload);
                         throw new Error();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -134,7 +135,7 @@ describe('Actions.ts', () => {
                         ctx.commit(expectedCommit, expectedPayload);
                     };
 
-                    expect(actions.foobar).to.commit(expectedCommit).containing.payload(expectedPayload);
+                    expect.action(actions.foobar).to.commit(expectedCommit).containing.payload(expectedPayload);
                 });
             });
 
@@ -147,7 +148,7 @@ describe('Actions.ts', () => {
                         ctx.commit('loaded');
                     };
 
-                    expect(actions.foobar).to.commit.in.order('fizzbuzz', 'foobar');
+                    expect.action(actions.foobar).to.commit.in.order('fizzbuzz', 'foobar');
                 });
 
                 it('Should when checking order fail when unexpected commit between expected commits', () => {
@@ -158,7 +159,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.commit.in.order('loading', 'loaded');
+                        expect.action(actions.foobar).to.commit.in.order('loading', 'loaded');
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -174,7 +175,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.commit('loading').as.root;
+                        expect.action(actions.foobar).to.commit('loading').as.root;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -188,7 +189,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.commit('loading').as.root;
+                        expect.action(actions.foobar).to.commit('loading').as.root;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -201,7 +202,7 @@ describe('Actions.ts', () => {
                         ctx.commit('loading', undefined, { root: true });
                     };
 
-                    expect(actions.foobar).to.commit('loading').as.root;
+                    expect.action(actions.foobar).to.commit('loading').as.root;
                 });
             });
 
@@ -212,7 +213,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.commit('loading').not.as.root;
+                        expect.action(actions.foobar).to.commit('loading').not.as.root;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -226,7 +227,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.commit('loading').not.as.root;
+                        expect.action(actions.foobar).to.commit('loading').not.as.root;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -239,7 +240,7 @@ describe('Actions.ts', () => {
                         ctx.commit('loading', undefined, { root: false });
                     };
 
-                    expect(actions.foobar).to.commit('loading').not.as.root;
+                    expect.action(actions.foobar).to.commit('loading').not.as.root;
                 });
             });
 
@@ -250,7 +251,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.commit('loading').is.silent;
+                        expect.action(actions.foobar).to.commit('loading').is.silent;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -265,7 +266,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.commit('loading').is.silent;
+                        expect.action(actions.foobar).to.commit('loading').is.silent;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -278,7 +279,7 @@ describe('Actions.ts', () => {
                         ctx.commit('loading', undefined, { silent: true });
                     };
 
-                    expect(actions.foobar).to.commit('loading').is.silent;
+                    expect.action(actions.foobar).to.commit('loading').is.silent;
                 });
             });
 
@@ -289,7 +290,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.commit('loading').is.not.silent;
+                        expect.action(actions.foobar).to.commit('loading').is.not.silent;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -304,7 +305,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.commit('loading').is.not.silent;
+                        expect.action(actions.foobar).to.commit('loading').is.not.silent;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -317,7 +318,7 @@ describe('Actions.ts', () => {
                         ctx.commit('loading', undefined, { silent: false });
                     };
 
-                    expect(actions.foobar).to.commit('loading').is.not.silent;
+                    expect.action(actions.foobar).to.commit('loading').is.not.silent;
                 });
             });
         });
@@ -328,7 +329,7 @@ describe('Actions.ts', () => {
                     ctx.dispatch('fizzbuzz');
                 };
 
-                expect(actions.foobar).to.dispatch('fizzbuzz');
+                expect.action(actions.foobar).to.dispatch('fizzbuzz');
             });
 
             it('Should fail when dispatch types do not match', () => {
@@ -338,7 +339,7 @@ describe('Actions.ts', () => {
                 };
 
                 try {
-                    expect(actions.foobar).to.dispatch(expectedDispatch);
+                    expect.action(actions.foobar).to.dispatch(expectedDispatch);
                     assert.fail();
                 } catch (err) {
                     const failedAssert = err as AssertionError;
@@ -351,7 +352,7 @@ describe('Actions.ts', () => {
                     ctx.dispatch('fizzbuzz');
                     ctx.dispatch('foobar');
                 };
-                expect(actions.foobar)
+                expect.action(actions.foobar)
                     .to.dispatch('fizzbuzz')
                     .and.dispatch('foobar');
             });
@@ -364,7 +365,7 @@ describe('Actions.ts', () => {
                     ctx.dispatch('2');
                     count++;
                 };
-                expect(actions.foobar).to.dispatch('1').and.dispatch('2');
+                expect.action(actions.foobar).to.dispatch('1').and.dispatch('2');
 
                 expect(count).to.eq(1);
             });
@@ -375,7 +376,7 @@ describe('Actions.ts', () => {
                 };
 
                 try {
-                    expect(actions.foobar).to.dispatch('foobar').and.dispatch('foobar');
+                    expect.action(actions.foobar).to.dispatch('foobar').and.dispatch('foobar');
                     assert.fail();
                 } catch (err) {
                     const failedAssert = err as AssertionError;
@@ -390,7 +391,7 @@ describe('Actions.ts', () => {
                     ctx.dispatch('loaded');
                 };
 
-                expect(actions.foobar).to.dispatch('foobar');
+                expect.action(actions.foobar).to.dispatch('foobar');
             });
 
             describe('payload', () => {
@@ -402,7 +403,7 @@ describe('Actions.ts', () => {
                         ctx.dispatch('fizzbuzz', expectedPayload);
                     };
 
-                    expect(actions.foobar).to.dispatch.containing.payload(expectedPayload);
+                    expect.action(actions.foobar).to.dispatch.containing.payload(expectedPayload);
                 });
 
                 it('Should fail when payload does not match', () => {
@@ -414,7 +415,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.dispatch.containing.payload(expectedPayload);
+                        expect.action(actions.foobar).to.dispatch.containing.payload(expectedPayload);
                         throw new Error();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -432,7 +433,7 @@ describe('Actions.ts', () => {
                         ctx.dispatch(expectedDispatch, expectedPayload);
                     };
 
-                    expect(actions.foobar).to.dispatch(expectedDispatch).containing.payload(expectedPayload);
+                    expect.action(actions.foobar).to.dispatch(expectedDispatch).containing.payload(expectedPayload);
                 });
             });
 
@@ -445,7 +446,7 @@ describe('Actions.ts', () => {
                         ctx.dispatch('loaded');
                     };
 
-                    expect(actions.foobar).to.dispatch.in.order('fizzbuzz', 'foobar');
+                    expect.action(actions.foobar).to.dispatch.in.order('fizzbuzz', 'foobar');
                 });
 
                 it('Should fail when unexpected dispatch between expected dispatches', () => {
@@ -456,7 +457,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.dispatch.in.order('loading', 'loaded');
+                        expect.action(actions.foobar).to.dispatch.in.order('loading', 'loaded');
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -472,7 +473,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.dispatch('loading').as.root;
+                        expect.action(actions.foobar).to.dispatch('loading').as.root;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -486,7 +487,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.dispatch('loading').as.root;
+                        expect.action(actions.foobar).to.dispatch('loading').as.root;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -499,7 +500,7 @@ describe('Actions.ts', () => {
                         ctx.dispatch('loading', undefined, { root: true });
                     };
 
-                    expect(actions.foobar).to.dispatch('loading').as.root;
+                    expect.action(actions.foobar).to.dispatch('loading').as.root;
                 });
             });
 
@@ -510,7 +511,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.dispatch('loading').not.as.root;
+                        expect.action(actions.foobar).to.dispatch('loading').not.as.root;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -524,7 +525,7 @@ describe('Actions.ts', () => {
                     };
 
                     try {
-                        expect(actions.foobar).to.dispatch('loading').not.as.root;
+                        expect.action(actions.foobar).to.dispatch('loading').not.as.root;
                         assert.fail();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
@@ -537,7 +538,7 @@ describe('Actions.ts', () => {
                         ctx.dispatch('loading', undefined, { root: false });
                     };
 
-                    expect(actions.foobar).to.dispatch('loading').not.as.root;
+                    expect.action(actions.foobar).to.dispatch('loading').not.as.root;
                 });
             });
         });
@@ -553,7 +554,7 @@ describe('Actions.ts', () => {
                         actualActionPayload = payload;
                     };
 
-                    expect(actions.foobar).with.actionPayload(expectedActionPayload).commit;
+                    expect.action(actions.foobar, expectedActionPayload).to.commit;
 
                     expect(actualActionPayload).to.eql(expectedActionPayload);
                 });
@@ -569,7 +570,7 @@ describe('Actions.ts', () => {
                         actualActionState = ctx.state;
                     };
 
-                    expect(actions.foobar).with.actionContext({ state: expectedActionState }).commit;
+                    expect.action(actions.foobar, null, { state: expectedActionState }).commit;
 
                     expect(actualActionState).to.eql(expectedActionState);
                 });
@@ -577,13 +578,13 @@ describe('Actions.ts', () => {
                 it('Should allow setting root state', () => {
                     let actualActionState: any;
                     const expectedActionState = {
-                        fizz: 'buzz',
+                        version: 'buzz',
                     };
                     actions.foobar = (ctx, _?) => {
                         actualActionState = ctx.rootState;
                     };
 
-                    expect(actions.foobar).with.actionContext({ rootState: expectedActionState }).commit;
+                    expect.action(actions.foobar, null, { rootState: expectedActionState }).to.commit;
 
                     expect(actualActionState).to.eql(expectedActionState);
                 });
@@ -597,7 +598,7 @@ describe('Actions.ts', () => {
                         actualActionGetters = ctx.getters;
                     };
 
-                    expect(actions.foobar).with.actionContext({ getters: expectedActionGetters }).commit;
+                    expect.action(actions.foobar, null, { getters: expectedActionGetters }).to.commit;
 
                     expect(actualActionGetters).to.eql(expectedActionGetters);
                 });
@@ -611,7 +612,7 @@ describe('Actions.ts', () => {
                         actualActionGetters = ctx.rootGetters;
                     };
 
-                    expect(actions.foobar).with.actionContext({ rootGetters: expectedActionGetters }).commit;
+                    expect.action(actions.foobar, null, { rootGetters: expectedActionGetters }).to.commit;
 
                     expect(actualActionGetters).to.eql(expectedActionGetters);
                 });
