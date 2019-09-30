@@ -4,8 +4,6 @@ import { AssertionError } from 'assert';
 
 import { vuexChai } from '../actions';
 
-chai.use(vuexChai);
-
 // tslint:disable:no-unused-expression
 describe('Actions.ts', () => {
     interface RootState {
@@ -14,6 +12,10 @@ describe('Actions.ts', () => {
     interface ModuleState {
         fizz: string;
     }
+
+    beforeEach(() => {
+         chai.use(vuexChai);
+    });
 
     describe('Synchronous action', () => {
         interface SyncAction extends ActionTree<ModuleState, RootState> {
@@ -334,7 +336,7 @@ describe('Actions.ts', () => {
 
             it('Should fail when dispatch types do not match', () => {
                 const expectedDispatch = 'somthing not right';
-                actions.foobar = async (ctx) => {
+                actions.foobar = (ctx) => {
                     ctx.dispatch('fizzbuzz');
                 };
 

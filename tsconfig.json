@@ -10,9 +10,14 @@
       "allowSyntheticDefaultImports": true,
       "sourceMap": true,
       "baseUrl": ".",
+      "typeRoots": [
+        "./src/typings",
+        "./node_modules/@types"
+      ],
       "types": [
         "mocha",
         "chai",
+        "chai-as-promised",
         "node",
         "ts-nameof"
       ],
