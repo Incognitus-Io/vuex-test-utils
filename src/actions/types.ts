@@ -1,5 +1,4 @@
 import { DispatchOptions, CommitOptions, ActionContext } from 'vuex';
-import { AsyncFunc } from 'mocha';
 
 declare global {
     namespace Chai {

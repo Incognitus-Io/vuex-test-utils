@@ -29,7 +29,6 @@
         "build": "rollup -c build/rollup.config.js"
     },
     "dependencies": {
-        "await-semaphore": "^0.1.3",
         "ts-optchain": "^0.1.8"
     },
     "devDependencies": {

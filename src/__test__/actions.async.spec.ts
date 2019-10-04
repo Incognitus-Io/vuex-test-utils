@@ -23,7 +23,6 @@ describe('Actions.ts', () => {
             foobar(ctx: ActionContext<ModuleState, RootState>, payload?: any): Promise<void>;
         }
         let actions: SyncAction;
-        const emptyCtx = {} as ActionContext<ModuleState, RootState>;
 
         beforeEach(() => {
             actions = {
