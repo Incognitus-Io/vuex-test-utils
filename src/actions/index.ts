@@ -1,6 +1,4 @@
 import { ActionContext, CommitOptions, DispatchOptions } from 'vuex';
-// import './types';
-import chaiAsPromised from 'chai-as-promised';
 import chaiEx from './register';
 import { actionFn, ObservedCommit, ObservedDispatch, commitFn, dispatchFn, actionFnSync } from './types';
 import { store } from './store';
@@ -8,6 +6,7 @@ import { store } from './store';
 export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     const Assertion = chai.Assertion;
     chaiEx(chai, _);
+    supportAsyncNot();
 
     chai.expect.action = <S, R>(
         action: actionFn<S, R>,
@@ -24,10 +23,12 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         let test: Chai.Assertion | Chai.PromisedAssertion;
         const actionRes = action(ctx, payload);
         if (isPromise(actionRes)) {
+
             const asyncAction = actionRes as Promise<void>;
             test = new Assertion(asyncAction.then(() => {
+
                 _.flag(test, store.executedCommits, executedCommits);
-                _.flag(test, store.executedDispatches, executedDispatches)
+                _.flag(test, store.executedDispatches, executedDispatches);
             }));
         } else {
             test = new Assertion(null);
@@ -36,10 +37,9 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         }
 
         return test;
-    };
+    }
 
     const isPromise = (obj: any) => obj && typeof obj.then === 'function';
-    const isAsync = (obj: any) => obj && Object.prototype.toString.call(obj).match(/AsyncFunction/);
 
     const emitCommit = (executedCommits: ObservedCommit[]): commitFn => {
         return (type: string, payload?: any, options?: CommitOptions) => {
@@ -60,4 +60,18 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
             });
         };
     };
+
+    function supportAsyncNot() {
+        // tslint:disable-next-line: variable-name
+        chai.Assertion.overwriteProperty('not', (_super) => {
+            return function () {
+                if (isPromise(this._obj)) {
+                    _.flag(this, store.notAsync, true);
+                    return this;
+                } else {
+                    _super.call(this);
+                }
+            };
+        });
+    }
 };

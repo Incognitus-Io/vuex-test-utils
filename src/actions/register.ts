@@ -12,7 +12,11 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         nameof<Chai.VuexCommits>((x) => x.containing),
         nameof<Chai.VuexAssertion>((x) => x.as),
     ].forEach((chain) => {
-        Assertion.addProperty(chain);
+        Assertion.addProperty(chain, function () {
+            if (isPromise(this._obj)) {
+                return this;
+            }
+        });
     });
 
     Assertion.addProperty(nameof<Chai.Assertion>((x) => x.getAwaiter), function () {
@@ -20,35 +24,48 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     });
 
     Assertion.addMethod(nameof<Chai.VuexOrder>((x) => x.order), function (...types: string[]) {
-        VuexAssertions.order(this, ...types);
-    });
-
-    Assertion.addChainableMethod(nameof<Chai.Assertion>((x) => x.commit), function (type: string) {
-        if (isPromise(this._obj)) {
-            const promise = this._obj as PromiseLike<any>;
-            this._obj = promise.then(() => {
-                VuexAssertions.commit(this, type);
-            });
+        const promise = getPromiseOrDefault(this);
+        if (promise) {
+            this._obj = promise.then(() => VuexAssertions.order(this, ...types));
             return this;
         } else {
-            VuexAssertions.commit(this, type);
+            VuexAssertions.order(this, ...types);
+        }
+    });
+
+    Assertion.addChainableMethod(nameof<Chai.Assertion>((x) => x.commit), function (type?: string) {
+
+        const promise = getPromiseOrDefault(this);
+        if (promise) {
+            if (type) {
+                this._obj = promise.then(() => VuexAssertions.commit(this, type));
+            }
+            return this;
+        } else {
+            VuexAssertions.commit(this, type!);
         }
     }, function () {
+
         _.flag(this, store.actionMode, 'commit');
     });
 
     Assertion.addChainableMethod(nameof<Chai.Assertion>((x) => x.dispatch), function (type: string) {
-        VuexAssertions.dispatch(this, type);
+        const promise = getPromiseOrDefault(this);
+        if (promise) {
+            this._obj = promise.then(() => VuexAssertions.dispatch(this, type));
+            return this;
+        } else {
+            VuexAssertions.dispatch(this, type);
+        }
     }, function () {
         _.flag(this, store.actionMode, 'dispatch');
     });
 
     Assertion.addMethod(nameof<Chai.VuexContaining>((x) => x.payload), function (payload: any) {
-        if (isPromise(this._obj)) {
-            const promise = this._obj as PromiseLike<any>;
-            this._obj = promise.then(() => {
-                VuexAssertions.payload(this, payload);
-            });
+
+        const promise = getPromiseOrDefault(this);
+        if (promise) {
+            this._obj = promise.then(() => VuexAssertions.payload(this, payload));
             return this;
         } else {
             VuexAssertions.payload(this, payload);
@@ -56,12 +73,27 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     });
 
     Assertion.addProperty(nameof<Chai.VuexAssertion>((x) => x.root), function () {
-        VuexAssertions.root(this);
+        const promise = getPromiseOrDefault(this);
+        if (promise) {
+            this._obj = promise.then(() => VuexAssertions.root(this));
+            return this;
+        } else {
+            VuexAssertions.root(this);
+        }
     });
 
     Assertion.addProperty(nameof<Chai.VuexCommitAssertions>((x) => x.silent), function () {
-        VuexAssertions.silent(this);
+        const promise = getPromiseOrDefault(this);
+        if (promise) {
+            this._obj = promise.then(() => VuexAssertions.silent(this));
+            return this;
+        } else {
+            VuexAssertions.silent(this);
+        }
     });
+
+    const getPromiseOrDefault = (assertion: Chai.AssertionStatic): PromiseLike<any> | undefined =>
+        (isPromise(assertion._obj)) ? assertion._obj as PromiseLike<any> : undefined;
 };
 
 export default chaiExtensions;

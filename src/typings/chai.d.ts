@@ -11,6 +11,9 @@ declare module Chai {
             method: (this: AssertionStatic, ...args: any[]) => void,
             chainingBehavior?: (this: AssertionStatic) => void
         ): void;
+        overwriteProperty(name: string, getter: (_super: any) =>
+            (this: AssertionStatic) => AssertionStatic | void): void;
+
     }
     interface AssertionPrototype {
         assert(

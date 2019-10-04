@@ -117,530 +117,651 @@ describe('Actions.ts', () => {
             });
 
             describe('payload', () => {
-                // it('Should commit with a payload', () => {
-                //     const expectedPayload = {
-                //         foo: 'bar',
-                //     };
-                //     actions.foobar = async (ctx) => {
-                //         ctx.commit('fizzbuzz', expectedPayload);
-                //     };
+                it('Should commit with a payload', () => {
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('fizzbuzz', expectedPayload);
+                    };
 
-                //     return expect.action(actions.foobar)
-                //         .to.commit.containing.payload(expect)
-                //         .getAwaiter;
-                // });
+                    return expect.action(actions.foobar)
+                        .to.commit
+                        .containing.payload(expectedPayload)
+                        .getAwaiter;
+                });
 
-                //         it('Should fail when commit payload does not match', () => {
-                //             const expectedPayload = {
-                //                 foo: 'bar',
-                //             };
-                //             actions.foobar = async (ctx) => {
-                //                 ctx.commit('fizzbuzz', {});
-                //             };
+                it('Should fail when commit payload does not match', async () => {
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('fizzbuzz', {});
+                    };
 
-                //             try {
-                //                 expect.actionAsync(actions.foobar).to.commit.containing.payload(expectedPayload);
-                //                 throw new Error();
-                //             } catch (err) {
-                //                 const failedAssert = err as AssertionError;
-                //                 expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
-                //             }
-                //         });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.commit
+                            .containing.payload(expectedPayload)
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
+                    }
+                });
 
-                //         it('Should allow checking commit and payload', () => {
-                //             const expectedCommit = 'fizzbuzz';
-                //             const expectedPayload = {
-                //                 foo: 'bar',
-                //             };
-                //             actions.foobar = async (ctx) => {
-                //                 ctx.commit('not what you`re looking for', { big: 'bang' });
-                //                 ctx.commit(expectedCommit, expectedPayload);
-                //             };
+                it('Should allow checking commit and payload', () => {
+                    const expectedCommit = 'fizzbuzz';
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('not what you`re looking for', { big: 'bang' });
+                        ctx.commit(expectedCommit, expectedPayload);
+                    };
 
-                //             expect.actionAsync(actions.foobar).to.commit(expectedCommit).containing.payload(expectedPayload);
-                //         });
+                    return expect.action(actions.foobar)
+                        .to.commit(expectedCommit)
+                        .containing.payload(expectedPayload)
+                        .getAwaiter;
+                });
             });
 
-            //     describe('in.order', () => {
-            //         it('Should check order loosely', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading');
-            //                 ctx.commit('fizzbuzz');
-            //                 ctx.commit('foobar');
-            //                 ctx.commit('loaded');
-            //             };
+            describe('in.order', () => {
+                it('Should check order loosely', () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading');
+                        ctx.commit('fizzbuzz');
+                        ctx.commit('foobar');
+                        ctx.commit('loaded');
+                    };
 
-            //             expect.actionAsync(actions.foobar).to.commit.in.order('fizzbuzz', 'foobar');
-            //         });
+                    return expect.action(actions.foobar)
+                        .to.commit
+                        .in.order('fizzbuzz', 'foobar')
+                        .getAwaiter;
+                });
 
-            //         it('Should when checking order fail when unexpected commit between expected commits', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading');
-            //                 ctx.commit('foobar');
-            //                 ctx.commit('loaded');
-            //             };
+                it('Should when checking order fail when unexpected commit between expected commits', async () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading');
+                        ctx.commit('foobar');
+                        ctx.commit('loaded');
+                    };
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.commit.in.order('loading', 'loaded');
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected 'loaded' commit but found 'foobar'`);
-            //             }
-            //         });
-            //     });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.commit
+                            .in.order('loading', 'loaded')
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected 'loaded' commit but found 'foobar'`);
+                    }
+                });
+            });
 
-            //     describe('as.root', () => {
-            //         it('Should fail when no options are provided', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, undefined);
-            //             };
+            describe('as.root', () => {
+                it('Should fail when no options are provided', async () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, undefined);
+                    };
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.commit('loading').as.root;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected to be a root commit, but found no commit options`);
-            //             }
-            //         });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.commit('loading')
+                            .as.root
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected to be a root commit, but found no commit options`);
+                    }
+                });
 
-            //         it('Should fail when not a root commit but expected', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, { root: false });
-            //             };
+                it('Should fail when not a root commit but expected', async () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, { root: false });
+                    };
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.commit('loading').as.root;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected false to be true`);
-            //             }
-            //         });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.commit('loading')
+                            .as.root
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected false to be true`);
+                    }
+                });
 
-            //         it('Should pass when is a root commit', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, { root: true });
-            //             };
+                it('Should pass when is a root commit', () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, { root: true });
+                    };
 
-            //             expect.actionAsync(actions.foobar).to.commit('loading').as.root;
-            //         });
-            //     });
+                    return expect.action(actions.foobar)
+                        .to.commit('loading')
+                        .as.root
+                        .getAwaiter;
+                });
+            });
 
-            //     describe('not.as.root', () => {
-            //         it('Should fail when no options are provided', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, undefined);
-            //             };
+            describe('not.as.root', () => {
+                it('Should fail when no options are provided', async () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, undefined);
+                    };
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.commit('loading').not.as.root;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected to be a root commit, but found no commit options`);
-            //             }
-            //         });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.commit('loading')
+                            .not.as.root
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected to be a root commit, but found no commit options`);
+                    }
+                });
 
-            //         it('Should fail when is root commit but not expected', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, { root: true });
-            //             };
+                it('Should fail when is root commit but not expected', async () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, { root: true });
+                    };
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.commit('loading').not.as.root;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected true to be false`);
-            //             }
-            //         });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.commit('loading')
+                            .not.as.root
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected true to be false`);
+                    }
+                });
 
-            //         it('Should pass when is not root commit', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, { root: false });
-            //             };
+                it('Should pass when is not root commit', () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, { root: false });
+                    };
 
-            //             expect.actionAsync(actions.foobar).to.commit('loading').not.as.root;
-            //         });
-            //     });
+                    return expect.action(actions.foobar)
+                        .to.commit('loading')
+                        .not.as.root
+                        .getAwaiter;
+                });
+            });
 
-            //     describe('is.silent', () => {
-            //         it('Should fail when no options are provided', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, undefined);
-            //             };
+            describe('is.silent', () => {
+                it('Should fail when no options are provided', async () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, undefined);
+                    };
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.commit('loading').is.silent;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message)
-            //                     .to.eq(`expected to be a silent commit, but found no commit options`);
-            //             }
-            //         });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.commit('loading')
+                            .is.silent
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message)
+                            .to.eq(`expected to be a silent commit, but found no commit options`);
+                    }
+                });
 
-            //         it('Should fail when not a root commit but expected', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, { silent: false });
-            //             };
+                it('Should fail when not a root commit but expected', async () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, { silent: false });
+                    };
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.commit('loading').is.silent;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected false to be true`);
-            //             }
-            //         });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.commit('loading')
+                            .is.silent
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected false to be true`);
+                    }
+                });
 
-            //         it('Should pass when is a root commit', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, { silent: true });
-            //             };
+                it('Should pass when is a root commit', () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, { silent: true });
+                    };
 
-            //             expect.actionAsync(actions.foobar).to.commit('loading').is.silent;
-            //         });
-            //     });
+                    return expect.action(actions.foobar)
+                        .to.commit('loading')
+                        .is.silent
+                        .getAwaiter;
+                });
+            });
 
-            //     describe('is.not.silent', () => {
-            //         it('Should fail when no options are provided', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, undefined);
-            //             };
+            describe('is.not.silent', () => {
+                it('Should fail when no options are provided', async () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, undefined);
+                    };
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.commit('loading').is.not.silent;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message)
-            //                     .to.eq(`expected to be a silent commit, but found no commit options`);
-            //             }
-            //         });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.commit('loading')
+                            .is.not.silent
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message)
+                            .to.eq(`expected to be a silent commit, but found no commit options`);
+                    }
+                });
 
-            //         it('Should fail when is root commit but not expected', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, { silent: true });
-            //             };
+                it('Should fail when is root commit but not expected', async () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, { silent: true });
+                    };
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.commit('loading').is.not.silent;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected true to be false`);
-            //             }
-            //         });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.commit('loading')
+                            .is.not.silent
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected true to be false`);
+                    }
+                });
 
-            //         it('Should pass when is not root commit', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 ctx.commit('loading', undefined, { silent: false });
-            //             };
+                it('Should pass when is not root commit', () => {
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('loading', undefined, { silent: false });
+                    };
 
-            //             expect.actionAsync(actions.foobar).to.commit('loading').is.not.silent;
-            //         });
-            //     });
-            // });
+                    return expect.action(actions.foobar)
+                        .to.commit('loading')
+                        .is.not.silent
+                        .getAwaiter;
+                });
+            });
 
-            // describe('dispatch', () => {
-            //     it('Should dispatch an action', () => {
-            //         actions.foobar = async (ctx) => {
-            //             await ctx.dispatch('fizzbuzz');
-            //         };
+            describe('dispatch', () => {
+                it('Should dispatch an action', () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('fizzbuzz');
+                    };
 
-            //         expect.actionAsync(actions.foobar).to.dispatch('fizzbuzz');
-            //     });
+                    return expect.action(actions.foobar)
+                        .to.dispatch('fizzbuzz')
+                        .getAwaiter;
+                });
 
-            //     it('Should fail when dispatch types do not match', () => {
-            //         const expectedDispatch = 'somthing not right';
-            //         actions.foobar = async (ctx) => {
-            //             await ctx.dispatch('fizzbuzz');
-            //         };
+                it('Should fail when dispatch types do not match', async () => {
+                    const expectedDispatch = 'somthing not right';
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('fizzbuzz');
+                    };
 
-            //         try {
-            //             expect.actionAsync(actions.foobar).to.dispatch(expectedDispatch);
-            //             assert.fail();
-            //         } catch (err) {
-            //             const failedAssert = err as AssertionError;
-            //             expect(failedAssert.message).to.eq(`expected '${expectedDispatch}' dispatch but found 'fizzbuzz' dispatch(s)`);
-            //         }
-            //     });
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.dispatch(expectedDispatch)
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected '${expectedDispatch}' dispatch but found 'fizzbuzz' dispatch(s)`);
+                    }
+                });
 
-            //     it('Should chain for multiple dispatches', () => {
-            //         actions.foobar = async (ctx) => {
-            //             await ctx.dispatch('fizzbuzz');
-            //             await ctx.dispatch('foobar');
-            //         };
-            //         expect.actionAsync(actions.foobar)
-            //             .to.dispatch('fizzbuzz')
-            //             .and.dispatch('foobar');
-            //     });
+                it('Should chain for multiple dispatches', () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('fizzbuzz');
+                        await ctx.dispatch('foobar');
+                    };
+                    return expect.action(actions.foobar)
+                        .to.dispatch('fizzbuzz')
+                        .and.dispatch('foobar')
+                        .getAwaiter;
+                });
 
-            //     it('Should only run the action once per expectation', () => {
-            //         let count = 0;
+                it('Should only run the action once per expectation', async () => {
+                    let count = 0;
 
-            //         actions.foobar = async (ctx) => {
-            //             await ctx.dispatch('1');
-            //             await ctx.dispatch('2');
-            //             count++;
-            //         };
-            //         expect.actionAsync(actions.foobar).to.dispatch('1').and.dispatch('2');
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('1');
+                        await ctx.dispatch('2');
+                        count++;
+                    };
 
-            //         expect(count).to.eq(1);
-            //     });
+                    const act = expect.action(actions.foobar).to.dispatch('1').and.dispatch('2').getAwaiter;
+                    await act;
 
-            //     it('Should fail if checking the same dispatch type multiple times', () => {
-            //         actions.foobar = async (ctx) => {
-            //             await ctx.dispatch('foobar');
-            //         };
+                    expect(count).to.eq(1);
+                });
 
-            //         try {
-            //             expect.actionAsync(actions.foobar).to.dispatch('foobar').and.dispatch('foobar');
-            //             assert.fail();
-            //         } catch (err) {
-            //             const failedAssert = err as AssertionError;
-            //             expect(failedAssert.message).to.eq(`expected 'foobar' dispatch but found '' dispatch(s)`);
-            //         }
-            //     });
+                it('Should fail if checking the same dispatch type multiple times', async () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('foobar');
+                    };
 
-            //     it('Should find the specified dispatch between multiple dispatches', () => {
-            //         actions.foobar = async (ctx) => {
-            //             await ctx.dispatch('loading');
-            //             await ctx.dispatch('foobar');
-            //             await ctx.dispatch('loaded');
-            //         };
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.dispatch('foobar')
+                            .and.dispatch('foobar')
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected 'foobar' dispatch but found '' dispatch(s)`);
+                    }
+                });
 
-            //         expect.actionAsync(actions.foobar).to.dispatch('foobar');
-            //     });
+                it('Should find the specified dispatch between multiple dispatches', () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('loading');
+                        await ctx.dispatch('foobar');
+                        await ctx.dispatch('loaded');
+                    };
 
-            //     describe('payload', () => {
-            //         it('Should dispatch with a payload', () => {
-            //             const expectedPayload = {
-            //                 foo: 'bar',
-            //             };
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('fizzbuzz', expectedPayload);
-            //             };
+                    return expect.action(actions.foobar)
+                        .to.dispatch('foobar')
+                        .getAwaiter;
+                });
 
-            //             expect.actionAsync(actions.foobar).to.dispatch.containing.payload(expectedPayload);
-            //         });
+                describe('payload', () => {
+                    it('Should dispatch with a payload', () => {
+                        const expectedPayload = {
+                            foo: 'bar',
+                        };
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('fizzbuzz', expectedPayload);
+                        };
 
-            //         it('Should fail when payload does not match', () => {
-            //             const expectedPayload = {
-            //                 foo: 'bar',
-            //             };
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('fizzbuzz', {});
-            //             };
+                        return expect.action(actions.foobar)
+                            .to.dispatch
+                            .containing.payload(expectedPayload)
+                            .getAwaiter;
+                    });
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.dispatch.containing.payload(expectedPayload);
-            //                 throw new Error();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
-            //             }
-            //         });
+                    it('Should fail when payload does not match', async () => {
+                        const expectedPayload = {
+                            foo: 'bar',
+                        };
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('fizzbuzz', {});
+                        };
 
-            //         it('Should allow checking dispatch and payload', () => {
-            //             const expectedDispatch = 'fizzbuzz';
-            //             const expectedPayload = {
-            //                 foo: 'bar',
-            //             };
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('not what you`re looking for', { big: 'bang' });
-            //                 await ctx.dispatch(expectedDispatch, expectedPayload);
-            //             };
+                        try {
+                            const act = expect.action(actions.foobar)
+                                .to.dispatch
+                                .containing.payload(expectedPayload)
+                                .getAwaiter;
+                            await act;
+                            throw new Error();
+                        } catch (err) {
+                            const failedAssert = err as AssertionError;
+                            expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
+                        }
+                    });
 
-            //             expect.actionAsync(actions.foobar)
-            //                 .to.dispatch(expectedDispatch)
-            //                 .containing.payload(expectedPayload);
-            //         });
-            //     });
+                    it('Should allow checking dispatch and payload', () => {
+                        const expectedDispatch = 'fizzbuzz';
+                        const expectedPayload = {
+                            foo: 'bar',
+                        };
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('not what you`re looking for', { big: 'bang' });
+                            await ctx.dispatch(expectedDispatch, expectedPayload);
+                        };
 
-            //     describe('in.order', () => {
-            //         it('Should check order loosely', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('loading');
-            //                 await ctx.dispatch('fizzbuzz');
-            //                 await ctx.dispatch('foobar');
-            //                 await ctx.dispatch('loaded');
-            //             };
+                        return expect.action(actions.foobar)
+                            .to.dispatch(expectedDispatch)
+                            .containing.payload(expectedPayload)
+                            .getAwaiter;
+                    });
+                });
 
-            //             expect.actionAsync(actions.foobar).to.dispatch.in.order('fizzbuzz', 'foobar');
-            //         });
+                describe('in.order', () => {
+                    it('Should check order loosely', () => {
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('loading');
+                            await ctx.dispatch('fizzbuzz');
+                            await ctx.dispatch('foobar');
+                            await ctx.dispatch('loaded');
+                        };
 
-            //         it('Should fail when unexpected dispatch between expected dispatches', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('loading');
-            //                 await ctx.dispatch('foobar');
-            //                 await ctx.dispatch('loaded');
-            //             };
+                        return expect.action(actions.foobar)
+                            .to.dispatch
+                            .in.order('fizzbuzz', 'foobar')
+                            .getAwaiter;
+                    });
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.dispatch.in.order('loading', 'loaded');
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected 'loaded' dispatch but found 'foobar'`);
-            //             }
-            //         });
-            //     });
+                    it('Should fail when unexpected dispatch between expected dispatches', async () => {
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('loading');
+                            await ctx.dispatch('foobar');
+                            await ctx.dispatch('loaded');
+                        };
 
-            //     describe('as.root', () => {
-            //         it('Should fail when no options are provided', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('loading', undefined, undefined);
-            //             };
+                        try {
+                            const act = expect.action(actions.foobar)
+                                .to.dispatch
+                                .in.order('loading', 'loaded')
+                                .getAwaiter;
+                            await act;
+                            assert.fail();
+                        } catch (err) {
+                            const failedAssert = err as AssertionError;
+                            expect(failedAssert.message).to.eq(`expected 'loaded' dispatch but found 'foobar'`);
+                        }
+                    });
+                });
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.dispatch('loading').as.root;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected to be a root dispatch, but found no dispatch options`);
-            //             }
-            //         });
+                describe('as.root', () => {
+                    it('Should fail when no options are provided', async () => {
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('loading', undefined, undefined);
+                        };
 
-            //         it('Should fail when not a root dispatch but expected', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('loading', undefined, { root: false });
-            //             };
+                        try {
+                            const act = expect.action(actions.foobar)
+                                .to.dispatch('loading')
+                                .as.root
+                                .getAwaiter;
+                            await act;
+                            assert.fail();
+                        } catch (err) {
+                            const failedAssert = err as AssertionError;
+                            expect(failedAssert.message).to.eq(`expected to be a root dispatch, but found no dispatch options`);
+                        }
+                    });
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.dispatch('loading').as.root;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected false to be true`);
-            //             }
-            //         });
+                    it('Should fail when not a root dispatch but expected', async () => {
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('loading', undefined, { root: false });
+                        };
 
-            //         it('Should pass when is a root dispatch', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('loading', undefined, { root: true });
-            //             };
+                        try {
+                            const act = expect.action(actions.foobar)
+                                .to.dispatch('loading')
+                                .as.root
+                                .getAwaiter;
+                            await act;
+                            assert.fail();
+                        } catch (err) {
+                            const failedAssert = err as AssertionError;
+                            expect(failedAssert.message).to.eq(`expected false to be true`);
+                        }
+                    });
 
-            //             expect.actionAsync(actions.foobar).to.dispatch('loading').as.root;
-            //         });
-            //     });
+                    it('Should pass when is a root dispatch', () => {
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('loading', undefined, { root: true });
+                        };
 
-            //     describe('not.as.root', () => {
-            //         it('Should fail when no options are provided', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('loading', undefined, undefined);
-            //             };
+                        expect.action(actions.foobar).to.dispatch('loading').as.root;
+                    });
+                });
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.dispatch('loading').not.as.root;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected to be a root dispatch, but found no dispatch options`);
-            //             }
-            //         });
+                describe('not.as.root', () => {
+                    it('Should fail when no options are provided', async () => {
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('loading', undefined, undefined);
+                        };
 
-            //         it('Should fail when is root dispatch but not expected', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('loading', undefined, { root: true });
-            //             };
+                        try {
+                            const act = expect.action(actions.foobar)
+                                .to.dispatch('loading')
+                                .not.as.root
+                                .getAwaiter;
+                            await act;
+                            assert.fail();
+                        } catch (err) {
+                            const failedAssert = err as AssertionError;
+                            expect(failedAssert.message).to.eq(`expected to be a root dispatch, but found no dispatch options`);
+                        }
+                    });
 
-            //             try {
-            //                 expect.actionAsync(actions.foobar).to.dispatch('loading').not.as.root;
-            //                 assert.fail();
-            //             } catch (err) {
-            //                 const failedAssert = err as AssertionError;
-            //                 expect(failedAssert.message).to.eq(`expected true to be false`);
-            //             }
-            //         });
+                    it('Should fail when is root dispatch but not expected', async () => {
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('loading', undefined, { root: true });
+                        };
 
-            //         it('Should pass when is not root dispatch', () => {
-            //             actions.foobar = async (ctx) => {
-            //                 await ctx.dispatch('loading', undefined, { root: false });
-            //             };
+                        try {
+                            const act = expect.action(actions.foobar)
+                                .to.dispatch('loading')
+                                .not.as.root
+                                .getAwaiter;
+                            await act;
+                            assert.fail();
+                        } catch (err) {
+                            const failedAssert = err as AssertionError;
+                            expect(failedAssert.message).to.eq(`expected true to be false`);
+                        }
+                    });
 
-            //             expect.actionAsync(actions.foobar).to.dispatch('loading').not.as.root;
-            //         });
-            // });
+                    it('Should pass when is not root dispatch', () => {
+                        actions.foobar = async (ctx) => {
+                            await ctx.dispatch('loading', undefined, { root: false });
+                        };
+
+                        return expect.action(actions.foobar)
+                            .to.dispatch('loading')
+                            .not.as.root
+                            .getAwaiter;
+                    });
+                });
+            });
         });
 
         describe('Setup', () => {
-            // describe('actionPayload', () => {
-            //     it('Should execute the action with the payload', () => {
-            //         let actualActionPayload: any;
-            //         const expectedActionPayload = {
-            //             foo: 'bar',
-            //         };
-            //         actions.foobar = async (_, payload) => {
-            //             actualActionPayload = payload;
-            //         };
+            describe('actionPayload', () => {
+                it('Should execute the action with the payload', async () => {
+                    let actualActionPayload: any;
+                    const expectedActionPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = async (_, payload) => {
+                        actualActionPayload = payload;
+                    };
 
-            //         expect.actionAsync(actions.foobar).with.actionPayload(expectedActionPayload).commit;
+                    const act = expect.action(actions.foobar, expectedActionPayload)
+                        .commit.getAwaiter;
+                    await act;
 
-            //         expect(actualActionPayload).to.eql(expectedActionPayload);
-            //     });
-            // });
+                    expect(actualActionPayload).to.eql(expectedActionPayload);
+                });
+            });
 
-            // describe('actonContext', () => {
-            //     it('Should allow setting state', () => {
-            //         let actualActionState: any;
-            //         const expectedActionState = {
-            //             fizz: 'buzz',
-            //         };
-            //         actions.foobar = async (ctx, _?) => {
-            //             actualActionState = ctx.state;
-            //         };
+            describe('actonContext', () => {
+                it('Should allow setting state', async () => {
+                    let actualActionState: any;
+                    const expectedActionState = {
+                        fizz: 'buzz',
+                    };
+                    actions.foobar = async (ctx, _?) => {
+                        actualActionState = ctx.state;
+                    };
 
-            //         expect.actionAsync(actions.foobar).with.actionContext({ state: expectedActionState }).commit;
+                    const act = expect.action(actions.foobar, undefined, { state: expectedActionState })
+                        .commit
+                        .getAwaiter;
+                    await act;
 
-            //         expect(actualActionState).to.eql(expectedActionState);
-            //     });
+                    expect(actualActionState).to.eql(expectedActionState);
+                });
 
-            //     it('Should allow setting root state', () => {
-            //         let actualActionState: any;
-            //         const expectedActionState = {
-            //             fizz: 'buzz',
-            //         };
-            //         actions.foobar = async (ctx, _?) => {
-            //             actualActionState = ctx.rootState;
-            //         };
+                it('Should allow setting root state', async () => {
+                    let actualActionState: any;
+                    const expectedActionState = {
+                        version: 'buzz',
+                    };
+                    actions.foobar = async (ctx, _?) => {
+                        actualActionState = ctx.rootState;
+                    };
 
-            //         expect.actionAsync(actions.foobar).with.actionContext({ rootState: expectedActionState }).commit;
+                    const act = expect.action(actions.foobar, undefined, { rootState: expectedActionState })
+                        .commit
+                        .getAwaiter;
+                    await act;
 
-            //         expect(actualActionState).to.eql(expectedActionState);
-            //     });
+                    expect(actualActionState).to.eql(expectedActionState);
+                });
 
-            //     it('Should allow setting getters', () => {
-            //         let actualActionGetters: any;
-            //         const expectedActionGetters = {
-            //             fizz: 'buzz',
-            //         };
-            //         actions.foobar = async (ctx, _?) => {
-            //             actualActionGetters = ctx.getters;
-            //         };
+                it('Should allow setting getters', async () => {
+                    let actualActionGetters: any;
+                    const expectedActionGetters = {
+                        fizz: 'buzz',
+                    };
+                    actions.foobar = async (ctx, _?) => {
+                        actualActionGetters = ctx.getters;
+                    };
 
-            //         expect.actionAsync(actions.foobar).with.actionContext({ getters: expectedActionGetters }).commit;
+                    const act = expect.action(actions.foobar, undefined, { getters: expectedActionGetters })
+                        .commit
+                        .getAwaiter;
+                    await act;
 
-            //         expect(actualActionGetters).to.eql(expectedActionGetters);
-            //     });
+                    expect(actualActionGetters).to.eql(expectedActionGetters);
+                });
 
-            //     it('Should allow setting root getters', () => {
-            //         let actualActionGetters: any;
-            //         const expectedActionGetters = {
-            //             fizz: 'buzz',
-            //         };
-            //         actions.foobar = async (ctx, _?) => {
-            //             actualActionGetters = ctx.rootGetters;
-            //         };
+                it('Should allow setting root getters', async () => {
+                    let actualActionGetters: any;
+                    const expectedActionGetters = {
+                        fizz: 'buzz',
+                    };
+                    actions.foobar = async (ctx, _?) => {
+                        actualActionGetters = ctx.rootGetters;
+                    };
 
-            //         expect.actionAsync(actions.foobar).with.actionContext({ rootGetters: expectedActionGetters }).commit;
+                    const act = expect.action(actions.foobar, undefined, { rootGetters: expectedActionGetters })
+                        .commit
+                        .getAwaiter;
+                    await act;
 
-            //         expect(actualActionGetters).to.eql(expectedActionGetters);
-            //     });
-            // });
+                    expect(actualActionGetters).to.eql(expectedActionGetters);
+                });
+            });
         });
     });
 });

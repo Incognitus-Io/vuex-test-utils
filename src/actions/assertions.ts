@@ -117,7 +117,9 @@ export class Assertions {
         let current: ObservedCommit | ObservedDispatch;
         let msg: string;
         const mode: actionMode = this.flag(that, store.actionMode);
-        const negated = this.flag(that, store.not) || false;
+        const negated = this.flag(that, store.not)
+            || this.flag(that, store.notAsync)
+            || false;
 
         if (mode === 'commit') {
             current = this.flag(that, store.currentCommit);
@@ -138,7 +140,9 @@ export class Assertions {
 
     public silent(that: Chai.AssertionStatic) {
         const currentCommit: ObservedCommit = this.flag(that, store.currentCommit);
-        const negated = this.flag(that, store.not) || false;
+        const negated = this.flag(that, store.not)
+            || this.flag(that, store.notAsync)
+            || false;
 
         if (!currentCommit.options) {
             throw new AssertionError(messages.expected.missingSilentCommitOptions);

@@ -1,5 +1,6 @@
 export const store = {
     not: 'negate',
+    notAsync: 'negateAsync',
     executedCommits: 'executedCommits',
     currentCommit: 'currentCommit',
     executedDispatches: 'executedDispatches',

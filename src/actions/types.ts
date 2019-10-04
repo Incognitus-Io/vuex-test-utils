@@ -39,9 +39,10 @@ declare global {
         }
 
         interface VuexCommits {
-            (type: string): VuexCommitAssertions;
+            (type?: string): VuexCommitAssertions;
             in: VuexOrder;
             containing: VuexContaining;
+            getAwaiter: PromiseLike<any>;
         }
 
         interface VuexDispatch {
