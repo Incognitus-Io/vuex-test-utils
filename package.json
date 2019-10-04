@@ -1,15 +1,15 @@
 {
     "name": "vuex-test-utils",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "description": "Testing utilities for VueX",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/???/vuex-test-utils"
+        "url": "git+https://github.com/Incognitus-Io/vuex-test-utils"
     },
     "bugs": {
-        "url": "https://github.com/???/vuex-test-utils/issues"
+        "url": "https://github.com/Incognitus-Io/vuex-test-utils/issues"
     },
-    "homepage": "https://github.com/???/vuex-test-utils",
+    "homepage": "https://github.com/Incognitus-Io/vuex-test-utils",
     "author": "James Stumme",
     "license": "MIT",
     "keywords": [

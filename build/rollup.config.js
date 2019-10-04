@@ -41,7 +41,7 @@ const genPlugins = (configOpts) => {
 }
 
 const genConfig = (configOpts) => ({
-    input: 'src/main.ts',
+    input: 'src/index.ts',
     output: {
         file: configOpts.output,
         format: configOpts.format,
