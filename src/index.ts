@@ -1,3 +1,1 @@
-const foo = '';
-
-export default foo;
+export {vuexChai} from '@/actions';

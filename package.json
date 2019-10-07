@@ -1,10 +1,10 @@
 {
-    "name": "vuex-test-utils",
+    "name": "@incognitus/vuex-test-utils",
     "version": "1.0.0",
-    "description": "Testing utilities for VueX",
+    "description": "Testing utilities for Vuex",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Incognitus-Io/vuex-test-utils"
+        "url": "git+https://github.com/Incognitus-Io/vuex-test-utils.git"
     },
     "bugs": {
         "url": "https://github.com/Incognitus-Io/vuex-test-utils/issues"
@@ -17,6 +17,9 @@
         "vuex",
         "test-utils"
     ],
+    "main": "dist/cjs/index.min.js",
+    "module": "dist/ems/index.min.js",
+    "typings": "types/index.d.ts",
     "scripts": {
         "pretest": "yarn build",
         "test:unit:ci": "cross-env TS_NODE_COMPILER=ttypescript TS_NODE_FILES=true mocha --opts ./mocha.opts",
@@ -27,9 +30,6 @@
         "lint": "tslint -c tslint.json 'src/**/*.ts'",
         "prebuild": "rimraf dist .rpt2_cache",
         "build": "rollup -c build/rollup.config.js"
-    },
-    "dependencies": {
-        "ts-optchain": "^0.1.8"
     },
     "devDependencies": {
         "@types/chai": "^4.1.3",
@@ -48,6 +48,7 @@
         "rollup-plugin-uglify": "^6.0.2",
         "ts-nameof": "3.2.0",
         "ts-node": "^8.3.0",
+        "ts-optchain": "^0.1.8",
         "tslint": "^5.18.0",
         "ttypescript": "^1.5.7",
         "typescript": "^3.4.3",
