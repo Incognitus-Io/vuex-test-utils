@@ -1,1 +1,4 @@
-export {vuexChai} from '@/actions';
+import './actions/types';
+import { vuexChai } from './actions';
+
+export default vuexChai;

@@ -1,6 +1,6 @@
 {
     "name": "@incognitus/vuex-test-utils",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Testing utilities for Vuex",
     "repository": {
         "type": "git",
@@ -17,8 +17,8 @@
         "vuex",
         "test-utils"
     ],
-    "main": "dist/cjs/index.min.js",
-    "module": "dist/ems/index.min.js",
+    "main": "dist/cjs/index.js",
+    "module": "dist/ems/index.js",
     "typings": "types/index.d.ts",
     "scripts": {
         "pretest": "yarn build",
@@ -28,8 +28,9 @@
         "coverage": "nyc --reporter=html --reporter=text yarn test:unit:ci",
         "coverage:coveralls": "nyc report --reporter=text-lcov | coveralls",
         "lint": "tslint -c tslint.json 'src/**/*.ts'",
-        "prebuild": "rimraf dist .rpt2_cache",
-        "build": "rollup -c build/rollup.config.js"
+        "prebuild": "rimraf dist .rpt2_cache Release",
+        "build": "rollup -c build/rollup.config.js",
+        "postbuild": "mkdirp Release/types && copyfiles .rpt2_cache/placeholder/**/* Release/types/ -u 2 && copyfiles dist/**/* Release/ && copyfiles package.json Release/ && copyfiles *.md Release/" 
     },
     "devDependencies": {
         "@types/chai": "^4.1.3",
@@ -37,6 +38,7 @@
         "@types/mocha": "^5.2.7",
         "chai": "^4.1.3",
         "chai-as-promised": "7.1.1",
+        "copyfiles": "^2.1.1",
         "cross-env": "^5.2.1",
         "mkdirp": "^0.5.1",
         "mocha": "^5.2.0",
