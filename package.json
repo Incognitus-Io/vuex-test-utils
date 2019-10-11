@@ -1,6 +1,6 @@
 {
     "name": "@incognitus/vuex-test-utils",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Testing utilities for Vuex",
     "repository": {
         "type": "git",

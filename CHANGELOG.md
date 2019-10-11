@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.0.2
+
+* Add partial support
+
 ## Version 1.0.1
 
 * Fixed default import of index
