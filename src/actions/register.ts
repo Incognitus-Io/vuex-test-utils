@@ -23,6 +23,16 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         return this._obj as PromiseLike<any>;
     });
 
+    Assertion.addProperty(nameof<Chai.VuexActionCtxAssertions>((x) => x.partially), function () {
+        const promise = getPromiseOrDefault(this);
+        if (promise) {
+            this._obj = promise.then(() => _.flag(this, store.partially, true));
+            return this;
+        } else {
+            _.flag(this, store.partially, true);
+        }
+    });
+
     Assertion.addMethod(nameof<Chai.VuexOrder>((x) => x.order), function (...types: string[]) {
         const promise = getPromiseOrDefault(this);
         if (promise) {

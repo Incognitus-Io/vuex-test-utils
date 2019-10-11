@@ -23,7 +23,6 @@ export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
         let test: Chai.Assertion | Chai.PromisedAssertion;
         const actionRes = action(ctx, payload);
         if (isPromise(actionRes)) {
-
             const asyncAction = actionRes as Promise<void>;
             test = new Assertion(asyncAction.then(() => {
 

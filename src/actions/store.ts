@@ -8,4 +8,5 @@ export const store = {
     actionPayload: 'actionPayload',
     actionCtx: 'actionContext',
     actionMode: 'actionMode',
+    partially: 'partially',
 };

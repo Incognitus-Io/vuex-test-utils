@@ -1,7 +1,7 @@
 import { ObservedBase, actionMode, ObservedCommit, ObservedDispatch } from './types';
 import { store } from './store';
 import { messages } from './messages';
-import { AssertionError } from 'chai';
+import chai, { AssertionError } from 'chai';
 
 export class Assertions {
     private Assertion: Chai.AssertionStatic;
@@ -91,6 +91,7 @@ export class Assertions {
         let current: ObservedBase;
         let executed: ObservedBase[];
         const mode: actionMode = this.flag(that, store.actionMode);
+        const partial: boolean = this.flag(that, store.partially);
 
         if (mode === 'commit') {
             current = this.flag(that, store.currentCommit);
@@ -105,11 +106,27 @@ export class Assertions {
         }
 
         const executedPayloads = executed.map((x) => x.payload);
-        const results = executedPayloads.some((x) => this.eql(payload, x));
+
+        let results = false;
+        if (partial) {
+            this.flag(that, store.partially, undefined);
+            executedPayloads.forEach((x) => {
+                try {
+                    new chai.Assertion(x).includes(payload);
+                    results = true;
+                } catch (err) {
+                    if (err instanceof AssertionError) {
+                        return;
+                    }
+                }
+            });
+        } else {
+            results = executedPayloads.some((x) => this.eql(payload, x));
+        }
         that.assert(
             results,
             messages.expected.payload, messages.notExpected.payload,
-            payload, executedPayloads,
+            JSON.stringify([payload]), JSON.stringify(executedPayloads),
         );
     }
 

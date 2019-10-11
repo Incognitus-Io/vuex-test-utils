@@ -4,6 +4,7 @@ import { AssertionError } from 'assert';
 
 import { vuexChai } from '../actions';
 
+// tslint:disable:max-classes-per-file
 // tslint:disable:no-unused-expression
 describe('Actions.ts', () => {
     interface RootState {
@@ -14,7 +15,7 @@ describe('Actions.ts', () => {
     }
 
     beforeEach(() => {
-         chai.use(vuexChai);
+        chai.use(vuexChai);
     });
 
     describe('Synchronous action', () => {
@@ -123,7 +124,7 @@ describe('Actions.ts', () => {
                         throw new Error();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
-                        expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
+                        expect(failedAssert.message).to.eq(`expected payload '[{"foo":"bar"}]' but found '[{}]'`);
                     }
                 });
 
@@ -138,6 +139,61 @@ describe('Actions.ts', () => {
                     };
 
                     expect.action(actions.foobar).to.commit(expectedCommit).containing.payload(expectedPayload);
+                });
+
+                it('Should support partial payload objects', () => {
+                    class Foobar {
+                        public version?: string;
+                        public name?: string;
+
+                        constructor(value: Partial<Foobar>) {
+                            Object.assign(this, value);
+                        }
+                    }
+                    const expectedPayload = { version: '1.0.0' } as Foobar;
+                    actions.foobar = (ctx) => {
+                        ctx.commit('Something', new Foobar({
+                            version: '1.0.0',
+                            name: 'Fizzbuzz',
+                        } as Foobar));
+                    };
+
+                    expect.action(actions.foobar)
+                        .to.commit
+                        .partially.containing
+                        .payload(expectedPayload);
+                });
+
+                it('Should disable partial support after assertion', () => {
+                    class Foobar {
+                        public version?: string;
+                        public name?: string;
+
+                        constructor(value: Partial<Foobar>) {
+                            Object.assign(this, value);
+                        }
+                    }
+                    const expectedPayload = { version: '1.0.0' } as Foobar;
+                    actions.foobar = (ctx) => {
+                        ctx.commit('Something', new Foobar({
+                            version: '1.0.0',
+                            name: 'Fizzbuzz',
+                        } as Foobar));
+                        ctx.commit('Somehting', 'foobar');
+                    };
+
+                    try {
+                        expect.action(actions.foobar)
+                            .to.commit
+                            .partially.containing
+                            .payload(expectedPayload)
+                            .and.commit
+                            .containing.payload('fooba');
+                        throw new Error('fail');
+                    } catch (err) {
+                        const failedAssert = err as Error;
+                        expect(failedAssert.message).to.not.eq(`fail`);
+                    }
                 });
             });
 
@@ -421,7 +477,7 @@ describe('Actions.ts', () => {
                         throw new Error();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
-                        expect(failedAssert.message).to.eq(`expected payload { foo: 'bar' } but found [ {} ]`);
+                        expect(failedAssert.message).to.eq(`expected payload '[{"foo":"bar"}]' but found '[{}]'`);
                     }
                 });
 
@@ -436,6 +492,29 @@ describe('Actions.ts', () => {
                     };
 
                     expect.action(actions.foobar).to.dispatch(expectedDispatch).containing.payload(expectedPayload);
+                });
+
+                it('Should support partial payload objects', () => {
+                    class Foobar {
+                        public version?: string;
+                        public name?: string;
+
+                        constructor(value: Partial<Foobar>) {
+                            Object.assign(this, value);
+                        }
+                    }
+                    const expectedPayload = { version: '1.0.0' } as Foobar;
+                    actions.foobar = (ctx) => {
+                        ctx.dispatch('Something', new Foobar({
+                            version: '1.0.0',
+                            name: 'Fizzbuzz',
+                        } as Foobar));
+                    };
+
+                    expect.action(actions.foobar)
+                        .to.dispatch
+                        .partially.containing
+                        .payload(expectedPayload);
                 });
             });
 

@@ -37,17 +37,19 @@ declare global {
             silent: VuexCommitAssertions;
         }
 
-        interface VuexCommits {
-            (type?: string): VuexCommitAssertions;
+        interface VuexActionCtxAssertions {
             in: VuexOrder;
+            partially: VuexActionCtxAssertions;
             containing: VuexContaining;
             getAwaiter: PromiseLike<any>;
         }
 
-        interface VuexDispatch {
+        interface VuexCommits extends VuexActionCtxAssertions {
+            (type?: string): VuexCommitAssertions;
+        }
+
+        interface VuexDispatch extends VuexActionCtxAssertions {
             (type: string): VuexAssertion;
-            in: VuexOrder;
-            containing: VuexContaining;
         }
 
         interface VuexContaining {
