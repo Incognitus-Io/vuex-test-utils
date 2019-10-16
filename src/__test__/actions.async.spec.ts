@@ -1,5 +1,4 @@
 import chai, { expect, assert } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
 import { vuexChai } from '../actions';
 import { ActionTree, ActionContext } from 'vuex';
 import { AssertionError } from 'assert';
@@ -16,7 +15,6 @@ describe('Actions.ts', () => {
 
     beforeEach(() => {
         chai.use(vuexChai);
-        chai.use(chaiAsPromised);
     });
 
     describe('Asynchronous action', () => {

@@ -1,9 +1,13 @@
+import chaiAsPromised from 'chai-as-promised';
+
 import { ActionContext, CommitOptions, DispatchOptions } from 'vuex';
 import chaiEx from './register';
-import { actionFn, ObservedCommit, ObservedDispatch, commitFn, dispatchFn, actionFnSync } from './types';
+import { actionFn, ObservedCommit, ObservedDispatch, commitFn, dispatchFn } from './types';
 import { store } from './store';
 
 export const vuexChai = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
+    chai.use(chaiAsPromised);
+
     const Assertion = chai.Assertion;
     chaiEx(chai, _);
     supportAsyncNot();

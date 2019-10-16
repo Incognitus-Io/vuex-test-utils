@@ -6,6 +6,7 @@ import configs from './config';
 const externals = [
     'vuex',
     'chai',
+    'chai-as-promised',
 ];
 
 const genTsPlugin = (configOpts) => typescript({

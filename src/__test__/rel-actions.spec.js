@@ -1,13 +1,11 @@
 const chai = require('chai');
 const expect = chai.expect;
 const assert = chai.assert;
-const chaiAsPromised = require('chai-as-promised');
 const vuexChai = require('../../Release/dist/cjs/index').vuexChai;
 
 describe('Release Library', () => {
     beforeEach(() => {
         chai.use(vuexChai);
-        chai.use(chaiAsPromised);
     });
 
     describe('Asynchronous action', () => {

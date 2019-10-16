@@ -1,7 +1,20 @@
 # Vuex-Test-Utils
+
 This is a collection of test utilities for vuex.  For actions you can check if things are commited or dispatched, and what their payload was.
 
-To do this you can say something like the following:
+## Getting started
+
+1. install using `yarn add -D @incognitus/vuex-test-utils`
+2. import and use vuexChaiUtils:
+
+```javascript
+import chai from 'chai';
+import { vuexChaiUtils } from 'vuexChaiUtils';
+
+chai.use(vuexChaiUtils);
+```
+
+## Basic useage
 
 ```javascript
 expect.action(actions.foobar).to.commit('foo').with.payload('bar')
@@ -24,6 +37,15 @@ For payloads you must either assert a commit or dispatch before the payload. You
 ```javascript
 exect.action(actions.foofizz).to.commit.in.order('foobar', 'fizzbuzz')
 ```
+
+Things that can be checked are:
+
+* commit
+* dispatch
+* containing payload (deep compare)
+* partially containing payload (shallow compare)
+* is (or not) root
+* is (or not) silent
 
 ## Passing action payload and contexts
 

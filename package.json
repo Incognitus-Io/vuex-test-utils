@@ -1,6 +1,6 @@
 {
     "name": "@incognitus/vuex-test-utils",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Testing utilities for Vuex",
     "repository": {
         "type": "git",
@@ -38,12 +38,14 @@
         "build": "rollup -c build/rollup.config.js",
         "postbuild": "mkdirp Release/types && copyfiles .rpt2_cache/placeholder/**/* Release/types/ -u 2 && copyfiles dist/**/* Release/ && copyfiles package.json Release/ && copyfiles *.md Release/" 
     },
+    "dependencies": {
+        "chai": ">=4.1.0",
+        "chai-as-promised": ">=7.1.0"
+    },
     "devDependencies": {
         "@types/chai": "^4.1.3",
         "@types/chai-as-promised": "7.1.0",
         "@types/mocha": "^5.2.7",
-        "chai": "^4.1.3",
-        "chai-as-promised": "7.1.1",
         "copyfiles": "^2.1.1",
         "cross-env": "^5.2.1",
         "mkdirp": "^0.5.1",
@@ -66,8 +68,6 @@
         "webpack-node-externals": "1.7.2"
     },
     "peerDependencies": {
-        "chai": ">=4.1.0",
-        "chai-as-promised": ">=7.1.0",
         "vuex": ">=3.0.0"
     },
     "nyc": {
