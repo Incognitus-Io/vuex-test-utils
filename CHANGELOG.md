@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.0.3
+
+* Fix missing partial support after `commit` or `dispatch`
+
 ## Version 1.0.2
 
 * Add partial support

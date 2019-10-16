@@ -28,6 +28,7 @@ declare global {
             is: VuexAssertion;
             not: VuexAssertion;
             root: VuexAssertion;
+            partially: VuexActionCtxAssertions;
             containing: VuexContaining;
         }
 
