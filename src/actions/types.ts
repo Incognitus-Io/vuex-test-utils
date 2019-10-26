@@ -7,16 +7,10 @@ declare global {
                 action: actionFn<S, R>,
                 payload?: any,
                 config?: ActionCtx<S, R>,
-            ): Assertion | PromisedAssertion;
+            ): Assertion;
         }
 
         interface Assertion {
-            commit: VuexCommits;
-            dispatch: VuexDispatch;
-            getAwaiter: PromiseLike<any>;
-        }
-
-        interface PromisedAssertion extends PromiseLike<any> {
             commit: VuexCommits;
             dispatch: VuexDispatch;
             getAwaiter: PromiseLike<any>;
@@ -83,6 +77,6 @@ export interface ObservedCommit extends ObservedBase {
 }
 export type commitFn = (_: string, __?: any, ___?: CommitOptions) => void;
 export type dispatchFn = (_: string, __?: any, ___?: DispatchOptions) => any;
-export type actionFn<S, R> = (_: ActionContext<S, R>, __?: any) => void | Promise<void>;
+export type actionFn<S, R> = (_: ActionContext<S, R>, __?: any) => void | PromiseLike<any>;
 export type actionFnSync<S, R> = (_: ActionContext<S, R>, __?: any) => void;
 export type actionMode = 'commit' | 'dispatch';

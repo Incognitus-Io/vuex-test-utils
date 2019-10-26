@@ -195,6 +195,27 @@ describe('Actions.ts', () => {
                         expect(failedAssert.message).to.not.eq(`fail`);
                     }
                 });
+
+                it('Should handle deep objects', () => {
+                    class Foobar {
+                        public message?: string;
+                        public tags?: string[];
+
+                        constructor(value: Partial<Foobar>) {
+                            Object.assign(this, value);
+                        }
+                    }
+                    const tag = 'API Error';
+                    const test = new Foobar({ message: 'foobar', tags: [tag] });
+
+                    actions.foobar = (ctx) => {
+                        ctx.commit('Something', new Foobar({ message: 'foobar', tags: [tag] }));
+                    };
+
+                    expect.action(actions.foobar)
+                        .to.commit
+                        .containing.payload(test);
+                });
             });
 
             describe('in.order', () => {

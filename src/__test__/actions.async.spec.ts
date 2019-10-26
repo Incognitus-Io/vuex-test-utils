@@ -223,6 +223,27 @@ describe('Actions.ts', () => {
                         expect(failedAssert.message).to.not.eq(`fail`);
                     }
                 });
+
+                it('Should handle deep objects', () => {
+                    class Foobar {
+                        public message?: string;
+                        public tags?: string[];
+
+                        constructor(value: Partial<Foobar>) {
+                            Object.assign(this, value);
+                        }
+                    }
+                    const test = new Foobar({ message: 'foobar', tags: ['fizz', 'buzz'] });
+
+                    actions.foobar = async (ctx) => {
+                        ctx.commit('Something', new Foobar({ message: 'foobar', tags: ['fizz', 'buzz'] }));
+                    };
+
+                    return expect.action(actions.foobar)
+                        .to.commit
+                        .containing.payload(test)
+                        .getAwaiter;
+                });
             });
 
             describe('in.order', () => {

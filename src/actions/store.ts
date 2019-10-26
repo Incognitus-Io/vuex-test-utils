@@ -1,4 +1,5 @@
 export const store = {
+    deep: 'deep',
     not: 'negate',
     notAsync: 'negateAsync',
     executedCommits: 'executedCommits',

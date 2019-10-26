@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 1.0.7
+
+* Removed deps on ChaiAsPromised
+
+## Version 1.0.6
+
+* Do a deep inspection on payload
+
+## Version 1.0.5
+
+* Removed PromisedAssertion
+
 ## Version 1.0.4
 
 * Reduced need for importing chai-as-promised

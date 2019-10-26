@@ -26,7 +26,7 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     Assertion.addProperty(nameof<Chai.VuexActionCtxAssertions>((x) => x.partially), function () {
         const promise = getPromiseOrDefault(this);
         if (promise) {
-            this._obj = promise.then(() => _.flag(this, store.partially, true));
+            this._obj = promise.then((test) => { _.flag(test, store.partially, true); return test; });
             return this;
         } else {
             _.flag(this, store.partially, true);
@@ -36,7 +36,7 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     Assertion.addMethod(nameof<Chai.VuexOrder>((x) => x.order), function (...types: string[]) {
         const promise = getPromiseOrDefault(this);
         if (promise) {
-            this._obj = promise.then(() => VuexAssertions.order(this, ...types));
+            this._obj = promise.then((test) => VuexAssertions.order(test, ...types));
             return this;
         } else {
             VuexAssertions.order(this, ...types);
@@ -44,38 +44,46 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     });
 
     Assertion.addChainableMethod(nameof<Chai.Assertion>((x) => x.commit), function (type?: string) {
-
         const promise = getPromiseOrDefault(this);
         if (promise) {
             if (type) {
-                this._obj = promise.then(() => VuexAssertions.commit(this, type));
+                this._obj = promise.then((test) => VuexAssertions.commit(test, type));
             }
             return this;
         } else {
             VuexAssertions.commit(this, type!);
         }
     }, function () {
-
-        _.flag(this, store.actionMode, 'commit');
+        const promise = getPromiseOrDefault(this);
+        if (promise) {
+            this._obj = promise.then((test) => { _.flag(test, store.actionMode, 'commit'); return test; });
+        } else {
+            _.flag(this, store.actionMode, 'commit');
+        }
     });
 
     Assertion.addChainableMethod(nameof<Chai.Assertion>((x) => x.dispatch), function (type: string) {
         const promise = getPromiseOrDefault(this);
         if (promise) {
-            this._obj = promise.then(() => VuexAssertions.dispatch(this, type));
+            this._obj = promise.then((test) => VuexAssertions.dispatch(test, type));
             return this;
         } else {
             VuexAssertions.dispatch(this, type);
         }
     }, function () {
-        _.flag(this, store.actionMode, 'dispatch');
+        const promise = getPromiseOrDefault(this);
+        if (promise) {
+            this._obj = promise.then((test) => { _.flag(test, store.actionMode, 'dispatch'); return test; });
+        } else {
+            _.flag(this, store.actionMode, 'dispatch');
+        }
     });
 
     Assertion.addMethod(nameof<Chai.VuexContaining>((x) => x.payload), function (payload: any) {
 
         const promise = getPromiseOrDefault(this);
         if (promise) {
-            this._obj = promise.then(() => VuexAssertions.payload(this, payload));
+            this._obj = promise.then((test) => VuexAssertions.payload(test, payload));
             return this;
         } else {
             VuexAssertions.payload(this, payload);
@@ -85,7 +93,7 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     Assertion.addProperty(nameof<Chai.VuexAssertion>((x) => x.root), function () {
         const promise = getPromiseOrDefault(this);
         if (promise) {
-            this._obj = promise.then(() => VuexAssertions.root(this));
+            this._obj = promise.then((test) => VuexAssertions.root(test));
             return this;
         } else {
             VuexAssertions.root(this);
@@ -95,7 +103,7 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     Assertion.addProperty(nameof<Chai.VuexCommitAssertions>((x) => x.silent), function () {
         const promise = getPromiseOrDefault(this);
         if (promise) {
-            this._obj = promise.then(() => VuexAssertions.silent(this));
+            this._obj = promise.then((test) => VuexAssertions.silent(test));
             return this;
         } else {
             VuexAssertions.silent(this);

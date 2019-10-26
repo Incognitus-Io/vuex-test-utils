@@ -17,7 +17,6 @@
       "types": [
         "mocha",
         "chai",
-        "chai-as-promised",
         "node",
         "ts-nameof"
       ],

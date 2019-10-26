@@ -41,6 +41,8 @@ export class Assertions {
             types[idx], type,
             true,
         ));
+
+        return that;
     }
 
     public commit(that: Chai.AssertionStatic, type: string) {
@@ -63,6 +65,8 @@ export class Assertions {
             messages.expected.commitedType, messages.notExpected.commitedType,
             type, executedTypes.join(', '),
         );
+
+        return that;
     }
 
     public dispatch(that: Chai.AssertionStatic, type: string) {
@@ -85,6 +89,8 @@ export class Assertions {
             messages.expected.dispatchType, messages.notExpected.dispatchType,
             type, executedTypes.join(', '),
         );
+
+        return that;
     }
 
     public payload(that: Chai.AssertionStatic, payload: any) {
@@ -92,6 +98,12 @@ export class Assertions {
         let executed: ObservedBase[];
         const mode: actionMode = this.flag(that, store.actionMode);
         const partial: boolean = this.flag(that, store.partially);
+
+        this.flag(that, store.deep, true);
+
+        if (mode == null) {
+            chai.assert.fail('Mode was not set');
+        }
 
         if (mode === 'commit') {
             current = this.flag(that, store.currentCommit);
@@ -128,6 +140,8 @@ export class Assertions {
             messages.expected.payload, messages.notExpected.payload,
             JSON.stringify([payload]), JSON.stringify(executedPayloads),
         );
+
+        return that;
     }
 
     public root(that: Chai.AssertionStatic) {
@@ -153,6 +167,8 @@ export class Assertions {
         const test = new this.Assertion(current.options.root).to.be;
         // tslint:disable-next-line:no-unused-expression
         (negated) ? test.false : test.true;
+
+        return that;
     }
 
     public silent(that: Chai.AssertionStatic) {
@@ -168,5 +184,7 @@ export class Assertions {
         const test = new this.Assertion(currentCommit.options.silent).to.be;
         // tslint:disable-next-line:no-unused-expression
         (negated) ? test.false : test.true;
+
+        return that;
     }
 }
