@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.0.8
+
+* Fixed partial payload with async actions
+
 ## Version 1.0.7
 
 * Removed deps on ChaiAsPromised

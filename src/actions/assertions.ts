@@ -6,12 +6,14 @@ import chai, { AssertionError } from 'chai';
 export class Assertions {
     private Assertion: Chai.AssertionStatic;
     private flag: (obj: object, key: string, value?: any) => any;
+    private transferFlags: (assertion: Chai.Assertion, obj: object, includeAll?: boolean) => void;
     private eql: (expected: any, actual?: any) => boolean;
 
     constructor(assertion: Chai.AssertionStatic, utils: Chai.ChaiUtils) {
         this.Assertion = assertion;
         this.flag = utils.flag;
         this.eql = utils.eql;
+        this.transferFlags = utils.transferFlags;
     }
 
     public order(that: Chai.AssertionStatic, ...types: string[]) {
@@ -99,8 +101,6 @@ export class Assertions {
         const mode: actionMode = this.flag(that, store.actionMode);
         const partial: boolean = this.flag(that, store.partially);
 
-        this.flag(that, store.deep, true);
-
         if (mode == null) {
             chai.assert.fail('Mode was not set');
         }
@@ -124,7 +124,10 @@ export class Assertions {
             this.flag(that, store.partially, undefined);
             executedPayloads.forEach((x) => {
                 try {
-                    new chai.Assertion(x).includes(payload);
+                    const partialPayload = new chai.Assertion(undefined);
+                    this.transferFlags(that as any, partialPayload);
+                    this.flag(partialPayload, store.object, x);
+                    partialPayload.includes(payload);
                     results = true;
                 } catch (err) {
                     if (err instanceof AssertionError) {

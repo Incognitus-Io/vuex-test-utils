@@ -26,7 +26,10 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     Assertion.addProperty(nameof<Chai.VuexActionCtxAssertions>((x) => x.partially), function () {
         const promise = getPromiseOrDefault(this);
         if (promise) {
-            this._obj = promise.then((test) => { _.flag(test, store.partially, true); return test; });
+            this._obj = promise.then((test) => {
+                _.flag(test, store.partially, true);
+                _.flag(test, store.deep, true);
+                return test; });
             return this;
         } else {
             _.flag(this, store.partially, true);
@@ -56,7 +59,11 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     }, function () {
         const promise = getPromiseOrDefault(this);
         if (promise) {
-            this._obj = promise.then((test) => { _.flag(test, store.actionMode, 'commit'); return test; });
+            this._obj = promise.then((test) => {
+                _.transferFlags(this as any, test);
+                _.flag(test, store.actionMode, 'commit');
+                return test;
+            });
         } else {
             _.flag(this, store.actionMode, 'commit');
         }
@@ -73,7 +80,11 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
     }, function () {
         const promise = getPromiseOrDefault(this);
         if (promise) {
-            this._obj = promise.then((test) => { _.flag(test, store.actionMode, 'dispatch'); return test; });
+            this._obj = promise.then((test) => {
+                _.transferFlags(this as any, test);
+                _.flag(test, store.actionMode, 'dispatch');
+                return test;
+            });
         } else {
             _.flag(this, store.actionMode, 'dispatch');
         }

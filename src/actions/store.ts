@@ -10,4 +10,5 @@ export const store = {
     actionCtx: 'actionContext',
     actionMode: 'actionMode',
     partially: 'partially',
+    object: 'object',
 };

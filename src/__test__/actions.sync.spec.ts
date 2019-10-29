@@ -196,7 +196,7 @@ describe('Actions.ts', () => {
                     }
                 });
 
-                it('Should handle deep objects', () => {
+                it('Should handle deep objects on partials', () => {
                     class Foobar {
                         public message?: string;
                         public tags?: string[];
@@ -209,12 +209,12 @@ describe('Actions.ts', () => {
                     const test = new Foobar({ message: 'foobar', tags: [tag] });
 
                     actions.foobar = (ctx) => {
-                        ctx.commit('Something', new Foobar({ message: 'foobar', tags: [tag] }));
+                        ctx.commit('Something', test);
                     };
 
                     expect.action(actions.foobar)
                         .to.commit
-                        .containing.payload(test);
+                        .partially.containing.payload(test);
                 });
             });
 

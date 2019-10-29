@@ -224,7 +224,7 @@ describe('Actions.ts', () => {
                     }
                 });
 
-                it('Should handle deep objects', () => {
+                it('Should handle deep objects on partials', () => {
                     class Foobar {
                         public message?: string;
                         public tags?: string[];
@@ -236,12 +236,12 @@ describe('Actions.ts', () => {
                     const test = new Foobar({ message: 'foobar', tags: ['fizz', 'buzz'] });
 
                     actions.foobar = async (ctx) => {
-                        ctx.commit('Something', new Foobar({ message: 'foobar', tags: ['fizz', 'buzz'] }));
+                        ctx.commit('Something', test);
                     };
 
                     return expect.action(actions.foobar)
                         .to.commit
-                        .containing.payload(test)
+                        .partially.containing.payload(test)
                         .getAwaiter;
                 });
             });
