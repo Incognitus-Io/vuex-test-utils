@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.0.9
+
+* Fixed not modifier for async commit and dispatch
+
 ## Version 1.0.8
 
 * Fixed partial payload with async actions

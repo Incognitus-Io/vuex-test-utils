@@ -114,6 +114,16 @@ describe('Actions.ts', () => {
                     .getAwaiter;
             });
 
+            it('Should pass when checking for commit to not happen', () => {
+                actions.foobar = async (ctx) => {
+                    ctx.commit('SuperSecret');
+                };
+
+                return expect.action(actions.foobar)
+                    .not.to.commit('Foobar')
+                    .getAwaiter;
+            });
+
             describe('payload', () => {
                 it('Should commit with a payload', () => {
                     const expectedPayload = {
@@ -479,298 +489,308 @@ describe('Actions.ts', () => {
                         .getAwaiter;
                 });
             });
+        });
 
-            describe('dispatch', () => {
-                it('Should dispatch an action', () => {
-                    actions.foobar = async (ctx) => {
-                        await ctx.dispatch('fizzbuzz');
-                    };
+        describe('dispatch', () => {
+            it('Should dispatch an action', () => {
+                actions.foobar = async (ctx) => {
+                    await ctx.dispatch('fizzbuzz');
+                };
 
-                    return expect.action(actions.foobar)
-                        .to.dispatch('fizzbuzz')
+                return expect.action(actions.foobar)
+                    .to.dispatch('fizzbuzz')
+                    .getAwaiter;
+            });
+
+            it('Should fail when dispatch types do not match', async () => {
+                const expectedDispatch = 'somthing not right';
+                actions.foobar = async (ctx) => {
+                    await ctx.dispatch('fizzbuzz');
+                };
+
+                try {
+                    const act = expect.action(actions.foobar)
+                        .to.dispatch(expectedDispatch)
                         .getAwaiter;
-                });
+                    await act;
+                    assert.fail();
+                } catch (err) {
+                    const failedAssert = err as AssertionError;
+                    expect(failedAssert.message).to.eq(`expected '${expectedDispatch}' dispatch but found 'fizzbuzz' dispatch(s)`);
+                }
+            });
 
-                it('Should fail when dispatch types do not match', async () => {
-                    const expectedDispatch = 'somthing not right';
-                    actions.foobar = async (ctx) => {
-                        await ctx.dispatch('fizzbuzz');
-                    };
+            it('Should chain for multiple dispatches', () => {
+                actions.foobar = async (ctx) => {
+                    await ctx.dispatch('fizzbuzz');
+                    await ctx.dispatch('foobar');
+                };
+                return expect.action(actions.foobar)
+                    .to.dispatch('fizzbuzz')
+                    .and.dispatch('foobar')
+                    .getAwaiter;
+            });
 
-                    try {
-                        const act = expect.action(actions.foobar)
-                            .to.dispatch(expectedDispatch)
-                            .getAwaiter;
-                        await act;
-                        assert.fail();
-                    } catch (err) {
-                        const failedAssert = err as AssertionError;
-                        expect(failedAssert.message).to.eq(`expected '${expectedDispatch}' dispatch but found 'fizzbuzz' dispatch(s)`);
-                    }
-                });
+            it('Should only run the action once per expectation', async () => {
+                let count = 0;
 
-                it('Should chain for multiple dispatches', () => {
-                    actions.foobar = async (ctx) => {
-                        await ctx.dispatch('fizzbuzz');
-                        await ctx.dispatch('foobar');
-                    };
-                    return expect.action(actions.foobar)
-                        .to.dispatch('fizzbuzz')
+                actions.foobar = async (ctx) => {
+                    await ctx.dispatch('1');
+                    await ctx.dispatch('2');
+                    count++;
+                };
+
+                const act = expect.action(actions.foobar).to.dispatch('1').and.dispatch('2').getAwaiter;
+                await act;
+
+                expect(count).to.eq(1);
+            });
+
+            it('Should fail if checking the same dispatch type multiple times', async () => {
+                actions.foobar = async (ctx) => {
+                    await ctx.dispatch('foobar');
+                };
+
+                try {
+                    const act = expect.action(actions.foobar)
+                        .to.dispatch('foobar')
                         .and.dispatch('foobar')
                         .getAwaiter;
-                });
+                    await act;
+                    assert.fail();
+                } catch (err) {
+                    const failedAssert = err as AssertionError;
+                    expect(failedAssert.message).to.eq(`expected 'foobar' dispatch but found '' dispatch(s)`);
+                }
+            });
 
-                it('Should only run the action once per expectation', async () => {
-                    let count = 0;
+            it('Should find the specified dispatch between multiple dispatches', () => {
+                actions.foobar = async (ctx) => {
+                    await ctx.dispatch('loading');
+                    await ctx.dispatch('foobar');
+                    await ctx.dispatch('loaded');
+                };
 
+                return expect.action(actions.foobar)
+                    .to.dispatch('foobar')
+                    .getAwaiter;
+            });
+
+            it('Should pass when checking for dispatch to not happen', () => {
+                actions.foobar = async (ctx) => {
+                    ctx.dispatch('SuperSecret');
+                };
+
+                return expect.action(actions.foobar)
+                    .not.to.dispatch('Foobar')
+                    .getAwaiter;
+            });
+
+            describe('payload', () => {
+                it('Should dispatch with a payload', () => {
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
                     actions.foobar = async (ctx) => {
-                        await ctx.dispatch('1');
-                        await ctx.dispatch('2');
-                        count++;
+                        await ctx.dispatch('fizzbuzz', expectedPayload);
                     };
 
-                    const act = expect.action(actions.foobar).to.dispatch('1').and.dispatch('2').getAwaiter;
-                    await act;
-
-                    expect(count).to.eq(1);
+                    return expect.action(actions.foobar)
+                        .to.dispatch
+                        .containing.payload(expectedPayload)
+                        .getAwaiter;
                 });
 
-                it('Should fail if checking the same dispatch type multiple times', async () => {
+                it('Should fail when payload does not match', async () => {
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
                     actions.foobar = async (ctx) => {
-                        await ctx.dispatch('foobar');
+                        await ctx.dispatch('fizzbuzz', {});
                     };
 
                     try {
                         const act = expect.action(actions.foobar)
-                            .to.dispatch('foobar')
-                            .and.dispatch('foobar')
+                            .to.dispatch
+                            .containing.payload(expectedPayload)
                             .getAwaiter;
                         await act;
-                        assert.fail();
+                        throw new Error();
                     } catch (err) {
                         const failedAssert = err as AssertionError;
-                        expect(failedAssert.message).to.eq(`expected 'foobar' dispatch but found '' dispatch(s)`);
+                        expect(failedAssert.message).to.eq(`expected payload '[{"foo":"bar"}]' but found '[{}]'`);
                     }
                 });
 
-                it('Should find the specified dispatch between multiple dispatches', () => {
+                it('Should allow checking dispatch and payload', () => {
+                    const expectedDispatch = 'fizzbuzz';
+                    const expectedPayload = {
+                        foo: 'bar',
+                    };
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('not what you`re looking for', { big: 'bang' });
+                        await ctx.dispatch(expectedDispatch, expectedPayload);
+                    };
+
+                    return expect.action(actions.foobar)
+                        .to.dispatch(expectedDispatch)
+                        .containing.payload(expectedPayload)
+                        .getAwaiter;
+                });
+
+                it('Should support partial payload objects', () => {
+                    class Foobar {
+                        public version?: string;
+                        public name?: string;
+
+                        constructor(value: Partial<Foobar>) {
+                            Object.assign(this, value);
+                        }
+                    }
+                    const expectedPayload = { version: '1.0.0' } as Foobar;
+                    actions.foobar = async (ctx) => {
+                        ctx.dispatch('Something', new Foobar({
+                            version: '1.0.0',
+                            name: 'Fizzbuzz',
+                        } as Foobar));
+                    };
+
+                    return expect.action(actions.foobar)
+                        .to.dispatch
+                        .partially.containing
+                        .payload(expectedPayload)
+                        .getAwaiter;
+                });
+            });
+
+            describe('in.order', () => {
+                it('Should check order loosely', () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('loading');
+                        await ctx.dispatch('fizzbuzz');
+                        await ctx.dispatch('foobar');
+                        await ctx.dispatch('loaded');
+                    };
+
+                    return expect.action(actions.foobar)
+                        .to.dispatch
+                        .in.order('fizzbuzz', 'foobar')
+                        .getAwaiter;
+                });
+
+                it('Should fail when unexpected dispatch between expected dispatches', async () => {
                     actions.foobar = async (ctx) => {
                         await ctx.dispatch('loading');
                         await ctx.dispatch('foobar');
                         await ctx.dispatch('loaded');
                     };
 
-                    return expect.action(actions.foobar)
-                        .to.dispatch('foobar')
-                        .getAwaiter;
-                });
-
-                describe('payload', () => {
-                    it('Should dispatch with a payload', () => {
-                        const expectedPayload = {
-                            foo: 'bar',
-                        };
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('fizzbuzz', expectedPayload);
-                        };
-
-                        return expect.action(actions.foobar)
+                    try {
+                        const act = expect.action(actions.foobar)
                             .to.dispatch
-                            .containing.payload(expectedPayload)
+                            .in.order('loading', 'loaded')
                             .getAwaiter;
-                    });
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected 'loaded' dispatch but found 'foobar'`);
+                    }
+                });
+            });
 
-                    it('Should fail when payload does not match', async () => {
-                        const expectedPayload = {
-                            foo: 'bar',
-                        };
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('fizzbuzz', {});
-                        };
+            describe('as.root', () => {
+                it('Should fail when no options are provided', async () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('loading', undefined, undefined);
+                    };
 
-                        try {
-                            const act = expect.action(actions.foobar)
-                                .to.dispatch
-                                .containing.payload(expectedPayload)
-                                .getAwaiter;
-                            await act;
-                            throw new Error();
-                        } catch (err) {
-                            const failedAssert = err as AssertionError;
-                            expect(failedAssert.message).to.eq(`expected payload '[{"foo":"bar"}]' but found '[{}]'`);
-                        }
-                    });
-
-                    it('Should allow checking dispatch and payload', () => {
-                        const expectedDispatch = 'fizzbuzz';
-                        const expectedPayload = {
-                            foo: 'bar',
-                        };
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('not what you`re looking for', { big: 'bang' });
-                            await ctx.dispatch(expectedDispatch, expectedPayload);
-                        };
-
-                        return expect.action(actions.foobar)
-                            .to.dispatch(expectedDispatch)
-                            .containing.payload(expectedPayload)
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.dispatch('loading')
+                            .as.root
                             .getAwaiter;
-                    });
-
-                    it('Should support partial payload objects', () => {
-                        class Foobar {
-                            public version?: string;
-                            public name?: string;
-    
-                            constructor(value: Partial<Foobar>) {
-                                Object.assign(this, value);
-                            }
-                        }
-                        const expectedPayload = { version: '1.0.0' } as Foobar;
-                        actions.foobar = async (ctx) => {
-                            ctx.dispatch('Something', new Foobar({
-                                version: '1.0.0',
-                                name: 'Fizzbuzz',
-                            } as Foobar));
-                        };
-    
-                        return expect.action(actions.foobar)
-                            .to.dispatch
-                            .partially.containing
-                            .payload(expectedPayload)
-                            .getAwaiter;
-                    });
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected to be a root dispatch, but found no dispatch options`);
+                    }
                 });
 
-                describe('in.order', () => {
-                    it('Should check order loosely', () => {
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('loading');
-                            await ctx.dispatch('fizzbuzz');
-                            await ctx.dispatch('foobar');
-                            await ctx.dispatch('loaded');
-                        };
+                it('Should fail when not a root dispatch but expected', async () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('loading', undefined, { root: false });
+                    };
 
-                        return expect.action(actions.foobar)
-                            .to.dispatch
-                            .in.order('fizzbuzz', 'foobar')
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.dispatch('loading')
+                            .as.root
                             .getAwaiter;
-                    });
-
-                    it('Should fail when unexpected dispatch between expected dispatches', async () => {
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('loading');
-                            await ctx.dispatch('foobar');
-                            await ctx.dispatch('loaded');
-                        };
-
-                        try {
-                            const act = expect.action(actions.foobar)
-                                .to.dispatch
-                                .in.order('loading', 'loaded')
-                                .getAwaiter;
-                            await act;
-                            assert.fail();
-                        } catch (err) {
-                            const failedAssert = err as AssertionError;
-                            expect(failedAssert.message).to.eq(`expected 'loaded' dispatch but found 'foobar'`);
-                        }
-                    });
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected false to be true`);
+                    }
                 });
 
-                describe('as.root', () => {
-                    it('Should fail when no options are provided', async () => {
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('loading', undefined, undefined);
-                        };
+                it('Should pass when is a root dispatch', () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('loading', undefined, { root: true });
+                    };
 
-                        try {
-                            const act = expect.action(actions.foobar)
-                                .to.dispatch('loading')
-                                .as.root
-                                .getAwaiter;
-                            await act;
-                            assert.fail();
-                        } catch (err) {
-                            const failedAssert = err as AssertionError;
-                            expect(failedAssert.message).to.eq(`expected to be a root dispatch, but found no dispatch options`);
-                        }
-                    });
-
-                    it('Should fail when not a root dispatch but expected', async () => {
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('loading', undefined, { root: false });
-                        };
-
-                        try {
-                            const act = expect.action(actions.foobar)
-                                .to.dispatch('loading')
-                                .as.root
-                                .getAwaiter;
-                            await act;
-                            assert.fail();
-                        } catch (err) {
-                            const failedAssert = err as AssertionError;
-                            expect(failedAssert.message).to.eq(`expected false to be true`);
-                        }
-                    });
-
-                    it('Should pass when is a root dispatch', () => {
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('loading', undefined, { root: true });
-                        };
-
-                        expect.action(actions.foobar).to.dispatch('loading').as.root;
-                    });
+                    expect.action(actions.foobar).to.dispatch('loading').as.root;
                 });
+            });
 
-                describe('not.as.root', () => {
-                    it('Should fail when no options are provided', async () => {
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('loading', undefined, undefined);
-                        };
+            describe('not.as.root', () => {
+                it('Should fail when no options are provided', async () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('loading', undefined, undefined);
+                    };
 
-                        try {
-                            const act = expect.action(actions.foobar)
-                                .to.dispatch('loading')
-                                .not.as.root
-                                .getAwaiter;
-                            await act;
-                            assert.fail();
-                        } catch (err) {
-                            const failedAssert = err as AssertionError;
-                            expect(failedAssert.message).to.eq(`expected to be a root dispatch, but found no dispatch options`);
-                        }
-                    });
-
-                    it('Should fail when is root dispatch but not expected', async () => {
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('loading', undefined, { root: true });
-                        };
-
-                        try {
-                            const act = expect.action(actions.foobar)
-                                .to.dispatch('loading')
-                                .not.as.root
-                                .getAwaiter;
-                            await act;
-                            assert.fail();
-                        } catch (err) {
-                            const failedAssert = err as AssertionError;
-                            expect(failedAssert.message).to.eq(`expected true to be false`);
-                        }
-                    });
-
-                    it('Should pass when is not root dispatch', () => {
-                        actions.foobar = async (ctx) => {
-                            await ctx.dispatch('loading', undefined, { root: false });
-                        };
-
-                        return expect.action(actions.foobar)
+                    try {
+                        const act = expect.action(actions.foobar)
                             .to.dispatch('loading')
                             .not.as.root
                             .getAwaiter;
-                    });
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected to be a root dispatch, but found no dispatch options`);
+                    }
+                });
+
+                it('Should fail when is root dispatch but not expected', async () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('loading', undefined, { root: true });
+                    };
+
+                    try {
+                        const act = expect.action(actions.foobar)
+                            .to.dispatch('loading')
+                            .not.as.root
+                            .getAwaiter;
+                        await act;
+                        assert.fail();
+                    } catch (err) {
+                        const failedAssert = err as AssertionError;
+                        expect(failedAssert.message).to.eq(`expected true to be false`);
+                    }
+                });
+
+                it('Should pass when is not root dispatch', () => {
+                    actions.foobar = async (ctx) => {
+                        await ctx.dispatch('loading', undefined, { root: false });
+                    };
+
+                    return expect.action(actions.foobar)
+                        .to.dispatch('loading')
+                        .not.as.root
+                        .getAwaiter;
                 });
             });
         });

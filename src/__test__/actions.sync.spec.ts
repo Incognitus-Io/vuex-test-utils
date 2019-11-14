@@ -99,6 +99,14 @@ describe('Actions.ts', () => {
                 expect.action(actions.foobar).to.commit('foobar');
             });
 
+            it('Should pass when checking for commit to not happen', () => {
+                actions.foobar = (ctx) => {
+                    ctx.commit('SuperSecret');
+                };
+
+                expect.action(actions.foobar).not.to.commit('Foobar');
+            });
+
             describe('payload', () => {
                 it('Should commit with a payload', () => {
                     const expectedPayload = {

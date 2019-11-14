@@ -62,6 +62,7 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
             this._obj = promise.then((test) => {
                 _.transferFlags(this as any, test);
                 _.flag(test, store.actionMode, 'commit');
+                _.flag(test, store.not, _.flag(test, store.notAsync));
                 return test;
             });
         } else {
@@ -83,6 +84,7 @@ export const chaiExtensions = (chai: Chai.ChaiStatic, _: Chai.ChaiUtils) => {
             this._obj = promise.then((test) => {
                 _.transferFlags(this as any, test);
                 _.flag(test, store.actionMode, 'dispatch');
+                _.flag(test, store.not, _.flag(test, store.notAsync));
                 return test;
             });
         } else {
