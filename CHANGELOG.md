@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.0.3
+* Fix `WithPayload` matchers when using array types
+
 ## Version 2.0.2
 * Fix `WithPayload` matchers when using primitive types
 
