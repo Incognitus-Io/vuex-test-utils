@@ -1,80 +1,78 @@
 {
-    "name": "@incognitus/vuex-test-utils",
-    "version": "1.0.9",
-    "description": "Testing utilities for Vuex",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/Incognitus-Io/vuex-test-utils.git"
-    },
-    "bugs": {
-        "url": "https://github.com/Incognitus-Io/vuex-test-utils/issues"
-    },
-    "homepage": "https://github.com/Incognitus-Io/vuex-test-utils",
-    "author": "James Stumme",
-    "license": "MIT",
-    "keywords": [
-        "vue",
-        "vuex",
-        "test-utils"
+  "name": "@incognitus/vuex-test-utils",
+  "version": "2.0.0",
+  "description": "Testing utilities for Vuex",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Incognitus-Io/vuex-test-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Incognitus-Io/vuex-test-utils/issues"
+  },
+  "homepage": "https://github.com/Incognitus-Io/vuex-test-utils",
+  "author": "James Stumme",
+  "license": "MIT",
+  "keywords": [
+    "vue",
+    "vuex",
+    "test-utils"
+  ],
+  "main": "dist/cjs/index.js",
+  "module": "dist/ems/index.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "pretest": "yarn build",
+    "test:ci": "jest",
+    "test": "yarn test:ci --watch",
+    "coverage": "yarn test:ci --coverage",
+    "coverage:coveralls": "coveralls < ./coverage/lcov.info",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "prebuild": "rimraf dist .rpt2_cache Release",
+    "build": "rollup -c build/rollup.config.js",
+    "postbuild": "mkdirp Release/types && copyfiles src/typings/**/* Release/types/ -u 2 && copyfiles dist/**/* Release/ && copyfiles package.json Release/ && copyfiles *.md Release/"
+  },
+  "dependencies": {
+    "deep-equal": "^2.0.3",
+    "expect": "^26.4.0",
+    "jest-chain": "^1.1.5",
+    "jest-get-type": "^26.3.0",
+    "jest-matcher-utils": "^26.4.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/deep-equal": "^1.0.1",
+    "@types/jest": "^26.0.10",
+    "copyfiles": "^2.4.0",
+    "coveralls": "^3.1.0",
+    "cross-env": "^7.0.2",
+    "jest": "^26.4.0",
+    "mkdirp": "^0.5.1",
+    "nyc": "^14.1.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.29.0",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.27.3",
+    "rollup-plugin-uglify": "^6.0.4",
+    "ts-nameof": "3.2.0",
+    "ts-node": "^9.0.0",
+    "ts-optchain": "^0.1.8",
+    "tslint": "^6.1.3",
+    "ttypescript": "^1.5.12",
+    "typescript": "^4.0.3",
+    "vuex": "^3.1.1"
+  },
+  "peerDependencies": {
+    "vuex": ">=3.0.0"
+  },
+  "nyc": {
+    "extension": [
+      "ts"
     ],
-    "main": "dist/cjs/index.js",
-    "module": "dist/ems/index.js",
-    "typings": "types/index.d.ts",
-    "scripts": {
-        "pretest": "yarn build",
-        "test:unit:ci": "cross-env TS_NODE_COMPILER=ttypescript TS_NODE_FILES=true mocha --opts ./mocha.opts",
-        "test:unit": "yarn test:unit:ci --watch-extensions ts --watch",
-        "test:unit:dbg": "yarn test:unit --inspect-brk",
-        "pretest:integration:ci": "yarn build",
-        "pretest:integration:ci:webpack": "yarn build",
-        "test:integration:ci": "cross-env mocha --opts ./mocha-js.opts",
-        "test:integration": "yarn test:integration:ci --watch-extensions js --watch",
-        "test:integration:ci:webpack": "cross-env mocha-webpack --webpack-config mocha-webpack.js --opts ./mocha-js.opts",
-        "test:integration:webpack": "yarn test:integration:ci:webpack --watch-extensions js --watch",
-        "coverage": "nyc --reporter=html --reporter=text yarn test:unit:ci",
-        "coverage:coveralls": "nyc report --reporter=text-lcov | coveralls",
-        "lint": "tslint -c tslint.json 'src/**/*.ts'",
-        "prebuild": "rimraf dist .rpt2_cache Release",
-        "build": "rollup -c build/rollup.config.js",
-        "postbuild": "mkdirp Release/types && copyfiles .rpt2_cache/placeholder/**/* Release/types/ -u 2 && copyfiles dist/**/* Release/ && copyfiles package.json Release/ && copyfiles *.md Release/" 
-    },
-    "dependencies": {
-        "chai": ">=4.1.0"
-    },
-    "devDependencies": {
-        "@types/chai": "^4.1.3",
-        "@types/mocha": "^5.2.7",
-        "copyfiles": "^2.1.1",
-        "cross-env": "^5.2.1",
-        "mkdirp": "^0.5.1",
-        "mocha": "^5.2.0",
-        "mocha-webpack": "^2.0.0-beta.0",
-        "nyc": "^14.1.1",
-        "rimraf": "^2.6.3",
-        "rollup": "^1.19.4",
-        "rollup-plugin-replace": "^2.2.0",
-        "rollup-plugin-typescript2": "^0.22.1",
-        "rollup-plugin-uglify": "^6.0.2",
-        "ts-nameof": "3.2.0",
-        "ts-node": "^8.3.0",
-        "ts-optchain": "^0.1.8",
-        "tslint": "^5.18.0",
-        "ttypescript": "^1.5.7",
-        "typescript": "^3.4.3",
-        "vuex": "^3.1.1",
-        "webpack": "^4.0.0",
-        "webpack-node-externals": "1.7.2"
-    },
-    "peerDependencies": {
-        "vuex": ">=3.0.0"
-    },
-    "nyc": {
-        "extension": [
-            "ts"
-        ],
-        "reporter": [
-            "lcov",
-            "text-summary"
-        ]
-    }
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
+  }
 }

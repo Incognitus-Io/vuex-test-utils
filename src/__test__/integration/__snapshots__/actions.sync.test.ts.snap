@@ -1,0 +1,136 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Integration sync .toCommit fails when the action does not commits a mutation 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommit()[22m
+
+Expected to have been commited:
+ [32m\\"foobar\\"[39m
+ but received:
+ [31m[\\"fizzbuzz\\"][39m"
+`;
+
+exports[`Integration sync .toCommitAsRoot fails when the action commits mutations but not as root 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitAsRoot()[22m
+
+Expected to have been commited as root:
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}[39m
+Received:
+ [31m[{\\"options\\": {\\"root\\": false}, \\"type\\": \\"1\\"}][39m"
+`;
+
+exports[`Integration sync .toCommitAsRoot fails when the action does not commits mutations 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitAsRoot()[22m
+
+Expected to have been commited as root:
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"NotIt\\"}[39m
+Received:
+ [31m[{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}][39m"
+`;
+
+exports[`Integration sync .toCommitInOrder fails when the action does not commits mutations 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitInOrder()[22m
+
+Expected to have been commit:
+ [32m[\\"1\\", \\"2\\"][39m
+Received:
+ [31m[\\"1\\", \\"2\\", \\"3\\"][39m"
+`;
+
+exports[`Integration sync .toCommitWithPayload loose fails when the action commits a mutation with the wrong payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitWithPayload()[22m
+
+Expected to have been commited with payload:
+ [32m{\\"payload\\": {\\"c\\": \\"d\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`Integration sync .toCommitWithPayload loose fails when the action commits the wrong mutation mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitWithPayload()[22m
+
+Expected to have been commited with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"foobar\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`Integration sync .toCommitWithPayload strict fails when the action commits a mutation with the wrong payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitWithPayload()[22m
+
+Expected to have been commited with payload:
+ [32m{\\"payload\\": {\\"c\\": \\"d\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`Integration sync .toCommitWithPayload strict fails when the action commits the wrong mutation mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitWithPayload()[22m
+
+Expected to have been commited with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"foobar\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`Integration sync .toDispatch fails when the action does not dispatchs a mutation 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatch()[22m
+
+Expected to have been dispatched:
+ [32m\\"foobar\\"[39m
+ but received:
+ [31m[\\"fizzbuzz\\"][39m"
+`;
+
+exports[`Integration sync .toDispatchAsRoot fails when the action dispatchs mutations but not as root 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchAsRoot()[22m
+
+Expected to have been dispatched as root:
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}[39m
+Received:
+ [31m[{\\"options\\": {\\"root\\": false}, \\"type\\": \\"1\\"}][39m"
+`;
+
+exports[`Integration sync .toDispatchAsRoot fails when the action does not dispatchs mutations 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchAsRoot()[22m
+
+Expected to have been dispatched as root:
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"NotIt\\"}[39m
+Received:
+ [31m[{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}][39m"
+`;
+
+exports[`Integration sync .toDispatchWithPayload loose fails when the action dispatchs a mutation with the wrong payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchWithPayload()[22m
+
+Expected to have been dispatched with payload:
+ [32m{\\"payload\\": {\\"c\\": \\"d\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`Integration sync .toDispatchWithPayload loose fails when the action dispatchs the wrong mutation mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchWithPayload()[22m
+
+Expected to have been dispatched with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"foobar\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`Integration sync .toDispatchWithPayload strict fails when the action dispatchs a mutation with the wrong payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchWithPayload()[22m
+
+Expected to have been dispatched with payload:
+ [32m{\\"payload\\": {\\"c\\": \\"d\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`Integration sync .toDispatchWithPayload strict fails when the action dispatchs the wrong mutation mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchWithPayload()[22m
+
+Expected to have been dispatched with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"foobar\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;

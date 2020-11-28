@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.not.toDispatch fails when the action dispatchs a mutation 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).not.toDispatch()[22m
+
+Expected to not have been dispatched:
+ [32m\\"fizzbuzz\\"[39m
+ but received:
+ [31m[\\"fizzbuzz\\"][39m"
+`;
+
+exports[`.toDispatch fails when the action does not dispatchs a mutation 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatch()[22m
+
+Expected to have been dispatched:
+ [32m\\"foobar\\"[39m
+ but received:
+ [31m[\\"fizzbuzz\\"][39m"
+`;

@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.0.0
+
+* Migrate to supporting jest
+
 ## Version 1.0.9
 
 * Fixed not modifier for async commit and dispatch

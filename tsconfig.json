@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-      "target": "esnext",
+      "target": "es2020",
       "module": "commonjs",
       "strict": true,
       "importHelpers": true,
@@ -10,14 +10,10 @@
       "allowSyntheticDefaultImports": true,
       "sourceMap": true,
       "baseUrl": ".",
-      "typeRoots": [
-        "./src/typings",
-        "./node_modules/@types"
-      ],
       "types": [
-        "mocha",
-        "chai",
         "node",
+        "jest",
+        "jest-chain",
         "ts-nameof"
       ],
       "paths": {
@@ -34,7 +30,7 @@
       "plugins": [{ "transform": "ts-nameof", "type": "raw" }]
     },
     "include": [
-      "src/**/*.ts",
+      "src/**/*.ts", "types/*", "global.d.ts",
     ],
     "exclude": [
       "node_modules",

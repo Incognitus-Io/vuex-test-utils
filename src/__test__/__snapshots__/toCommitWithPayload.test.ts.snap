@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.not.toCommitWithPayload loose fails when the action commits a mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).not.toCommitWithPayload()[22m
+
+Expected to not have been commited with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\", \\"c\\": \\"d\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`.not.toCommitWithPayload strict fails when the action commits a mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).not.toCommitWithPayload()[22m
+
+Expected to not have been commited with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`.toCommitWithPayload loose fails when the action commits a mutation with the wrong payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitWithPayload()[22m
+
+Expected to have been commited with payload:
+ [32m{\\"payload\\": {\\"c\\": \\"d\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`.toCommitWithPayload loose fails when the action commits the wrong mutation mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitWithPayload()[22m
+
+Expected to have been commited with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"foobar\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`.toCommitWithPayload strict fails when the action commits a mutation with the wrong payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitWithPayload()[22m
+
+Expected to have been commited with payload:
+ [32m{\\"payload\\": {\\"c\\": \\"d\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`.toCommitWithPayload strict fails when the action commits the wrong mutation mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitWithPayload()[22m
+
+Expected to have been commited with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"foobar\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;

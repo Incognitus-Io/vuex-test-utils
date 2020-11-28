@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.not.toCommitAsRoot fails when the action commits mutations 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).not.toCommitAsRoot()[22m
+
+Expected to not have been commited as root:
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}[39m
+Received:
+ [31m[{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}][39m"
+`;
+
+exports[`.toCommitAsRoot fails when the action commits mutations but not as root 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitAsRoot()[22m
+
+Expected to have been commited as root:
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}[39m
+Received:
+ [31m[{\\"options\\": {\\"root\\": false}, \\"type\\": \\"1\\"}][39m"
+`;
+
+exports[`.toCommitAsRoot fails when the action does not commits mutations 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommitAsRoot()[22m
+
+Expected to have been commited as root:
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"NotIt\\"}[39m
+Received:
+ [31m[{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}][39m"
+`;

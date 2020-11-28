@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.not.toCommit fails when the action commits a mutation 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).not.toCommit()[22m
+
+Expected to not have been commited:
+ [32m\\"fizzbuzz\\"[39m
+ but received:
+ [31m[\\"fizzbuzz\\"][39m"
+`;
+
+exports[`.toCommit fails when the action does not commits a mutation 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommit()[22m
+
+Expected to have been commited:
+ [32m\\"foobar\\"[39m
+ but received:
+ [31m[\\"fizzbuzz\\"][39m"
+`;

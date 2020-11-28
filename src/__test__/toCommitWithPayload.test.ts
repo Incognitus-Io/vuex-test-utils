@@ -1,0 +1,150 @@
+import { ActionTree, ActionContext } from 'vuex';
+
+import { action } from '../actions';
+import matcher from '../toCommitWithPayload';
+
+expect.extend(matcher)
+
+interface SyncAction extends ActionTree<any, any> {
+    foobar(ctx: ActionContext<any, any>): void;
+}
+
+describe('.toCommitWithPayload', () => {
+    describe('strict', () => {
+        it('passes when the action commits a mutation with the correct payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            action(actions.foobar, { a: 'b' })
+                .toCommitWithPayload('fizzbuzz', { a: 'b' }, true);
+        });
+        it('fails when the action commits the wrong mutation mutation with the correct payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            expect(() => action(actions.foobar, { a: 'b' })
+                .toCommitWithPayload('foobar', { a: 'b' }, true)
+            ).toThrowErrorMatchingSnapshot();
+        });
+        it('fails when the action commits a mutation with the wrong payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            expect(() => action(actions.foobar, { a: 'b' })
+                .toCommitWithPayload('fizzbuzz', { c: 'd' }, true)
+            ).toThrowErrorMatchingSnapshot();
+        });
+    });
+    describe('loose', () => {
+        it('passes when the action commits a mutation with the correct payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            action(actions.foobar, { a: 'b', c: 'd' })
+                .toCommitWithPayload('fizzbuzz', { a: 'b' });
+        });
+        it('fails when the action commits the wrong mutation mutation with the correct payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            expect(() => action(actions.foobar, { a: 'b' })
+                .toCommitWithPayload('foobar', { a: 'b' }, true)
+            ).toThrowErrorMatchingSnapshot();
+        });
+        it('fails when the action commits a mutation with the wrong payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            expect(() => action(actions.foobar, { a: 'b' })
+                .toCommitWithPayload('fizzbuzz', { c: 'd' })
+            ).toThrowErrorMatchingSnapshot();
+        });
+    });
+});
+
+describe('.not.toCommitWithPayload', () => {
+    describe('strict', () => {
+        it('fails when the action commits a mutation with the correct payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            expect(() => action(actions.foobar, { a: 'b' })
+                .not.toCommitWithPayload('fizzbuzz', { a: 'b' }, true)
+            ).toThrowErrorMatchingSnapshot();
+        });
+        it('passes when the action commits the wrong mutation mutation with the correct payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            action(actions.foobar, { a: 'b' })
+                .not.toCommitWithPayload('foobar', { a: 'b' }, true);
+        });
+        it('passes when the action commits a mutation with the wrong payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            action(actions.foobar, { a: 'b' })
+                .not.toCommitWithPayload('fizzbuzz', { c: 'd' }, true);
+        });
+    });
+    describe('loose', () => {
+        it('fails when the action commits a mutation with the correct payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            expect(() => action(actions.foobar, { a: 'b', c: 'd' })
+                .not.toCommitWithPayload('fizzbuzz', { a: 'b' })
+            ).toThrowErrorMatchingSnapshot();
+        });
+        it('passes when the action commits the wrong mutation mutation with the correct payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            action(actions.foobar, { a: 'b' })
+                .not.toCommitWithPayload('foobar', { a: 'b' }, true);
+        });
+        it('passes when the action commits a mutation with the wrong payload', () => {
+            const actions = {
+                foobar: (ctx, payload) => {
+                    ctx.commit('fizzbuzz', payload);
+                }
+            } as SyncAction;
+
+            action(actions.foobar, { a: 'b' })
+                .not.toCommitWithPayload('fizzbuzz', { c: 'd' });
+        });
+    });
+});

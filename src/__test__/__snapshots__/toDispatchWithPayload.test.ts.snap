@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.not.toDispatchWithPayload loose fails when the action dispatchs a mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).not.toDispatchWithPayload()[22m
+
+Expected to not have been dispatched with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\", \\"c\\": \\"d\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`.not.toDispatchWithPayload strict fails when the action dispatchs a mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).not.toDispatchWithPayload()[22m
+
+Expected to not have been dispatched with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`.toDispatchWithPayload loose fails when the action dispatchs a mutation with the wrong payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchWithPayload()[22m
+
+Expected to have been dispatched with payload:
+ [32m{\\"payload\\": {\\"c\\": \\"d\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`.toDispatchWithPayload loose fails when the action dispatchs the wrong mutation mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchWithPayload()[22m
+
+Expected to have been dispatched with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"foobar\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`.toDispatchWithPayload strict fails when the action dispatchs a mutation with the wrong payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchWithPayload()[22m
+
+Expected to have been dispatched with payload:
+ [32m{\\"payload\\": {\\"c\\": \\"d\\"}, \\"type\\": \\"fizzbuzz\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;
+
+exports[`.toDispatchWithPayload strict fails when the action dispatchs the wrong mutation mutation with the correct payload 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchWithPayload()[22m
+
+Expected to have been dispatched with payload:
+ [32m{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"foobar\\"}[39m
+Received:
+ [31m[{\\"payload\\": {\\"a\\": \\"b\\"}, \\"type\\": \\"fizzbuzz\\"}][39m"
+`;

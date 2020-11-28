@@ -5,7 +5,8 @@ import configs from './config';
 
 const externals = [
     'vuex',
-    'chai',
+    'deep-equal',
+    'jest-matcher-utils',
 ];
 
 const genTsPlugin = (configOpts) => typescript({
