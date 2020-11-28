@@ -52,5 +52,6 @@ export interface ObservedCommit extends ObservedBase {
 export type commitFn = (_: string, __?: any, ___?: CommitOptions) => void;
 export type dispatchFn = (_: string, __?: any, ___?: DispatchOptions) => any;
 /** An Vuex action function. */
-export type actionFn<S, R> = (_: ActionContext<S, R>, __?: any) => void | PromiseLike<any>;
+export type actionFn<S, R> = (_: ActionContext<S, R>, __?: any) => (any | Promise<any>);
+export type actionPromise<S, R> = (_: ActionContext<S, R>, __?: any) => Promise<any>
 export type actionMode = 'commit' | 'dispatch';

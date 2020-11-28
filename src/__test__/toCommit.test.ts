@@ -8,6 +8,9 @@ expect.extend(matcher)
 interface SyncAction extends ActionTree<any, any> {
     foobar(ctx: ActionContext<any, any>): void;
 }
+interface AsyncAction extends ActionTree<any, any> {
+    foobar(ctx: ActionContext<any, any>): Promise<void>;
+}
 
 describe('.toCommit', () => {
     it('passes when the action commits a mutation', () => {
@@ -27,6 +30,18 @@ describe('.toCommit', () => {
         } as SyncAction;
 
         expect(() => action(actions.foobar).toCommit('foobar')).toThrowErrorMatchingSnapshot();
+    });
+
+    it('handles async actions', async () => {
+        const actions = {
+            foobar: async (ctx) => {
+                ctx.commit('fizzbuzz');
+                await new Promise(resolve => setImmediate(() => resolve()));
+                ctx.commit('foo');
+            }
+        } as AsyncAction;
+        
+        await action(actions.foobar).resolves.toCommit('foo');
     });
 });
 

@@ -1,10 +1,7 @@
-/// <reference types="jest-chain" />
 import { ActionCtx, actionFn, ActionResults } from "../src/index";
 
 declare global {
   namespace jest {
-    type ChainedActionMatchers = ChainedMatchers<ActionResults>;
-
     interface Expect {
       <T = any>(actual: T): JestMatchers<T>;
       /**
@@ -21,7 +18,7 @@ declare global {
         action: actionFn<S, R>,
         payload?: any,
         config?: ActionCtx<S, R>
-      ): JestMatchers<ActionResults> | ChainedMatchers<ActionResults>;
+      ): JestMatchers<ActionResults>;
     }
 
     interface Matchers<R, T> {

@@ -1,6 +1,6 @@
 {
   "name": "@incognitus/vuex-test-utils",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Testing utilities for Vuex",
   "repository": {
     "type": "git",
@@ -34,7 +34,6 @@
   "dependencies": {
     "deep-equal": "^2.0.3",
     "expect": "^26.4.0",
-    "jest-chain": "^1.1.5",
     "jest-get-type": "^26.3.0",
     "jest-matcher-utils": "^26.4.0"
   },

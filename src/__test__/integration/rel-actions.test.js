@@ -9,23 +9,25 @@ describe('Release Library', () => {
         });
 
         describe('commit', () => {
-            it('Should commit a mutation', () => {
+            it('Should commit a mutation', async () => {
                 actions.foobar = async (ctx) => {
                     ctx.commit('fizzbuzz');
                 };
 
-                expect.action(actions.foobar)
+                await expect.action(actions.foobar)
+                    .resolves
                     .toCommit('fizzbuzz');
             });
 
-            it('Should fail when commit types do not match', () => {
+            it('Should fail when commit types do not match', async () => {
                 const expectedCommit = 'somthing not right';
                 actions.foobar = async (ctx) => {
                     ctx.commit('foobar');
                 };
 
                 try {
-                    expect.action(actions.foobar)
+                    await expect.action(actions.foobar)
+                        .resolves
                         .toCommit(expectedCommit);
                     assert.fail();
                 } catch (err) {
@@ -35,14 +37,15 @@ describe('Release Library', () => {
         });
 
         describe('dispatch', () => {
-            it('Should fail when dispatch types do not match', () => {
+            it('Should fail when dispatch types do not match', async () => {
                 const expectedDispatch = 'somthing not right';
                 actions.foobar = async (ctx) => {
                     ctx.dispatch('foobar');
                 };
 
                 try {
-                    expect.action(actions.foobar)
+                    await expect.action(actions.foobar)
+                        .resolves
                         .toDispatch(expectedDispatch);
                     assert.fail();
                 } catch (err) {

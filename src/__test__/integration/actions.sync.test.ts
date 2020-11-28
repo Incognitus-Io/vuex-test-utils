@@ -1,7 +1,6 @@
 /// <reference path="../../../types/index.d.ts"/>
 
 import { ActionContext, ActionTree } from "vuex";
-import { ActionResults } from "../..";
 
 interface SyncAction extends ActionTree<any, any> {
   foobar(ctx: ActionContext<any, any>): void;
@@ -28,19 +27,6 @@ describe("Integration sync", () => {
       expect(() =>
         expect.action(actions.foobar).toCommit("foobar")
       ).toThrowErrorMatchingSnapshot();
-    });
-
-    it("supports chaining with jest-chain", () => {
-      const actions = {
-        foobar: (ctx) => {
-          ctx.commit("fizzbuzz");
-          ctx.commit("foobar");
-        },
-      } as SyncAction;
-
-      (expect.action(actions.foobar) as jest.ChainedActionMatchers)
-        .toCommit("fizzbuzz")
-        .toCommit("fizzbuzz");
     });
   });
 

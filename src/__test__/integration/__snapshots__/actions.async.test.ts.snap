@@ -6,16 +6,16 @@ exports[`Integration async .toCommit fails when the action does not commits a mu
 Expected to have been commited:
  [32m\\"foobar\\"[39m
  but received:
- [31m[\\"fizzbuzz\\"][39m"
+ [31m[\\"fizzbuzz\\", \\"fizz\\"][39m"
 `;
 
 exports[`Integration async .toCommitAsRoot fails when the action commits mutations but not as root 1`] = `
 "[2mexpect([22m[31mreceived[39m[2m).toCommitAsRoot()[22m
 
 Expected to have been commited as root:
- [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}[39m
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"2\\"}[39m
 Received:
- [31m[{\\"options\\": {\\"root\\": false}, \\"type\\": \\"1\\"}][39m"
+ [31m[{\\"options\\": {\\"root\\": false}, \\"type\\": \\"1\\"}, {\\"options\\": {\\"root\\": false}, \\"type\\": \\"2\\"}][39m"
 `;
 
 exports[`Integration async .toCommitAsRoot fails when the action does not commits mutations 1`] = `
@@ -24,7 +24,7 @@ exports[`Integration async .toCommitAsRoot fails when the action does not commit
 Expected to have been commited as root:
  [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"NotIt\\"}[39m
 Received:
- [31m[{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}][39m"
+ [31m[{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}, {\\"options\\": {\\"root\\": true}, \\"type\\": \\"2\\"}][39m"
 `;
 
 exports[`Integration async .toCommitInOrder fails when the action does not commits mutations 1`] = `

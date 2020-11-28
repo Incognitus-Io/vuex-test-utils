@@ -43,31 +43,6 @@ Things that can be checked are:
 * toDispatchAsRoot
 * toDispatchInOrder
 
-## Chained assertions
-With some additional configuration you can also chain assertions.  This allows for checking multiple things happened in the same test.  Alternatively you could also specify the expect multiple times.
-
-jest.config.js
-```javascript
-module.export = {
-  setupFilesAfterEnv: ['@incognitus/vuex-test-utils', 'jest-chain'],
-}
-```
-
-Javascript
-```javascript
-expect.action(actions.foofizz)
-  .toCommit('foobar')
-  .toCommit('fizzbuzz')
-```
-
-Typescript
-```typescript
-(expect.action(actions.foofizz) as jest.ChainedActionMatchers)
-  .toCommit('foobar')
-  .toCommit('fizzbuzz')
-```
-
-
 ## Passing action payload and contexts
 
 Payload, state, root state, getters, and root getters can also be passed in with the option parameters on the `expect.action` method

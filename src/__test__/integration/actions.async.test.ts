@@ -8,350 +8,353 @@ interface SyncAction extends ActionTree<any, any> {
 
 describe("Integration async", () => {
   describe(".toCommit", () => {
-    it("passes when the action commits a mutation", () => {
+    it("passes when the action commits a mutation", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
+          await Promise.resolve();
           ctx.commit("fizzbuzz");
-          return Promise.resolve();
         },
       } as SyncAction;
 
-      expect.action(actions.foobar).toCommit("fizzbuzz");
+      await expect.action(actions.foobar).resolves.toCommit("fizzbuzz");
     });
-    it("fails when the action does not commits a mutation", () => {
+    it("fails when the action does not commits a mutation", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
           ctx.commit("fizzbuzz");
-          return Promise.resolve();
+          await Promise.resolve();
+          ctx.commit("fizz");
         },
       } as SyncAction;
 
-      expect(() =>
-        expect.action(actions.foobar).toCommit("foobar")
-      ).toThrowErrorMatchingSnapshot();
+      await expect(() =>
+        expect.action(actions.foobar).resolves.toCommit("foobar")
+      ).rejects.toThrowErrorMatchingSnapshot();
     });
   });
 
   describe(".toCommitAsRoot", () => {
-    it("passes when the action commits mutations as root", () => {
+    it("passes when the action commits mutations as root", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
+          await Promise.resolve();
           ctx.commit("1", undefined, { root: true });
-          return Promise.resolve();
         },
       } as SyncAction;
 
-      expect.action(actions.foobar).toCommitAsRoot("1");
+      await expect.action(actions.foobar).resolves.toCommitAsRoot("1");
     });
-    it("fails when the action commits mutations but not as root", () => {
+    it("fails when the action commits mutations but not as root", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
           ctx.commit("1", undefined, { root: false });
-          return Promise.resolve();
+          await Promise.resolve();
+          ctx.commit("2", undefined, { root: false });
         },
       } as SyncAction;
 
-      expect(() =>
-        expect.action(actions.foobar).toCommitAsRoot("1")
-      ).toThrowErrorMatchingSnapshot();
+      await expect(() =>
+        expect.action(actions.foobar).resolves.toCommitAsRoot("2")
+      ).rejects.toThrowErrorMatchingSnapshot();
     });
-    it("fails when the action does not commits mutations", () => {
+    it("fails when the action does not commits mutations", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
           ctx.commit("1", undefined, { root: true });
-          return Promise.resolve();
+          await Promise.resolve();
+          ctx.commit("2", undefined, { root: true });
         },
       } as SyncAction;
 
-      expect(() =>
-        expect.action(actions.foobar).toCommitAsRoot("NotIt")
-      ).toThrowErrorMatchingSnapshot();
+      await expect(() =>
+        expect.action(actions.foobar).resolves.toCommitAsRoot("NotIt")
+      ).rejects.toThrowErrorMatchingSnapshot();
     });
   });
 
   describe(".toCommitInOrder", () => {
-    it("passes when the action commits mutations", () => {
+    it("passes when the action commits mutations", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
           ctx.commit("1");
           ctx.commit("2");
+          await Promise.resolve();
           ctx.commit("3");
-          return Promise.resolve();
         },
       } as SyncAction;
 
-      expect.action(actions.foobar).toCommitInOrder(["1", "2", "3"]);
+      await expect.action(actions.foobar).resolves.toCommitInOrder(["1", "2", "3"]);
     });
-    it("passes when the acton commits some mutations when not strict", () => {
+    it("passes when the acton commits some mutations when not strict", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
           ctx.commit("1");
           ctx.commit("2");
+          await Promise.resolve();
           ctx.commit("3");
-          return Promise.resolve();
         },
       } as SyncAction;
 
-      expect.action(actions.foobar).toCommitInOrder(["1", "3"], false);
+      await expect.action(actions.foobar).resolves.toCommitInOrder(["1", "3"], false);
     });
-    it("fails when the action does not commits mutations", () => {
+    it("fails when the action does not commits mutations", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
           ctx.commit("1");
           ctx.commit("2");
+          await Promise.resolve();
           ctx.commit("3");
-          return Promise.resolve();
         },
       } as SyncAction;
 
-      expect(() =>
-        expect.action(actions.foobar).toCommitInOrder(["1", "2"])
-      ).toThrowErrorMatchingSnapshot();
+      await expect(() =>
+        expect.action(actions.foobar).resolves.toCommitInOrder(["1", "2"])
+      ).rejects.toThrowErrorMatchingSnapshot();
     });
   });
 
   describe(".toCommitWithPayload", () => {
     describe("strict", () => {
-      it("passes when the action commits a mutation with the correct payload", () => {
+      it("passes when the action commits a mutation with the correct payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.commit("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect
-          .action(actions.foobar, { a: "b" })
+        await expect
+          .action(actions.foobar, { a: "b" }).resolves
           .toCommitWithPayload("fizzbuzz", { a: "b" }, true);
       });
-      it("fails when the action commits the wrong mutation mutation with the correct payload", () => {
+      it("fails when the action commits the wrong mutation mutation with the correct payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.commit("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect(() =>
-          expect
-            .action(actions.foobar, { a: "b" })
+        await expect(async () =>
+          await expect
+            .action(actions.foobar, { a: "b" }).resolves
             .toCommitWithPayload("foobar", { a: "b" }, true)
-        ).toThrowErrorMatchingSnapshot();
+        ).rejects.toThrowErrorMatchingSnapshot();
       });
-      it("fails when the action commits a mutation with the wrong payload", () => {
+      it("fails when the action commits a mutation with the wrong payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.commit("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect(() =>
-          expect
-            .action(actions.foobar, { a: "b" })
+        await expect( async () =>
+          await expect
+            .action(actions.foobar, { a: "b" }).resolves
             .toCommitWithPayload("fizzbuzz", { c: "d" }, true)
-        ).toThrowErrorMatchingSnapshot();
+        ).rejects.toThrowErrorMatchingSnapshot();
       });
     });
     describe("loose", () => {
-      it("passes when the action commits a mutation with the correct payload", () => {
+      it("passes when the action commits a mutation with the correct payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.commit("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect
-          .action(actions.foobar, { a: "b", c: "d" })
+        await expect
+          .action(actions.foobar, { a: "b", c: "d" }).resolves
           .toCommitWithPayload("fizzbuzz", { a: "b" });
       });
-      it("fails when the action commits the wrong mutation mutation with the correct payload", () => {
+      it("fails when the action commits the wrong mutation mutation with the correct payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.commit("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect(() =>
-          expect
-            .action(actions.foobar, { a: "b" })
+        await expect(async () =>
+          await expect
+            .action(actions.foobar, { a: "b" }).resolves
             .toCommitWithPayload("foobar", { a: "b" }, true)
-        ).toThrowErrorMatchingSnapshot();
+        ).rejects.toThrowErrorMatchingSnapshot();
       });
-      it("fails when the action commits a mutation with the wrong payload", () => {
+      it("fails when the action commits a mutation with the wrong payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.commit("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect(() =>
-          expect
-            .action(actions.foobar, { a: "b" })
+        await expect(async () =>
+          await expect
+            .action(actions.foobar, { a: "b" }).resolves
             .toCommitWithPayload("fizzbuzz", { c: "d" })
-        ).toThrowErrorMatchingSnapshot();
+        ).rejects.toThrowErrorMatchingSnapshot();
       });
     });
   });
 
   describe(".toDispatch", () => {
-    it("passes when the action dispatchs a mutation", () => {
+    it("passes when the action dispatchs a mutation", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
+          await Promise.resolve();
           ctx.dispatch("fizzbuzz");
-          return Promise.resolve();
         },
       } as SyncAction;
 
-      expect.action(actions.foobar).toDispatch("fizzbuzz");
+      await expect.action(actions.foobar).resolves.toDispatch("fizzbuzz");
     });
-    it("fails when the action does not dispatchs a mutation", () => {
+    it("fails when the action does not dispatchs a mutation", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
+          await Promise.resolve();
           ctx.dispatch("fizzbuzz");
-          return Promise.resolve();
         },
       } as SyncAction;
 
-      expect(() =>
-        expect.action(actions.foobar).toDispatch("foobar")
-      ).toThrowErrorMatchingSnapshot();
+      await expect(async () =>
+        await expect.action(actions.foobar).resolves.toDispatch("foobar")
+      ).rejects.toThrowErrorMatchingSnapshot();
     });
   });
 
   describe(".toDispatchAsRoot", () => {
-    it("passes when the action dispatchs mutations as root", () => {
+    it("passes when the action dispatchs mutations as root", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
+          await Promise.resolve();
           ctx.dispatch("1", undefined, { root: true });
-          return Promise.resolve();
         },
       } as SyncAction;
 
-      expect.action(actions.foobar).toDispatchAsRoot("1");
+      await expect.action(actions.foobar).resolves.toDispatchAsRoot("1");
     });
-    it("fails when the action dispatchs mutations but not as root", () => {
+    it("fails when the action dispatchs mutations but not as root", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
+          await Promise.resolve();
           ctx.dispatch("1", undefined, { root: false });
-          return Promise.resolve();
         },
       } as SyncAction;
 
-      expect(() =>
-        expect.action(actions.foobar).toDispatchAsRoot("1")
-      ).toThrowErrorMatchingSnapshot();
+      await expect(async () =>
+        await expect.action(actions.foobar).resolves.toDispatchAsRoot("1")
+      ).rejects.toThrowErrorMatchingSnapshot();
     });
-    it("fails when the action does not dispatchs mutations", () => {
+    it("fails when the action does not dispatchs mutations", async () => {
       const actions = {
-        foobar: (ctx) => {
+        foobar: async (ctx) => {
+          await Promise.resolve();
           ctx.dispatch("1", undefined, { root: true });
-          return Promise.resolve();
         },
       } as SyncAction;
 
-      expect(() =>
-        expect.action(actions.foobar).toDispatchAsRoot("NotIt")
-      ).toThrowErrorMatchingSnapshot();
+      await expect(async () =>
+        await expect.action(actions.foobar).resolves.toDispatchAsRoot("NotIt")
+      ).rejects.toThrowErrorMatchingSnapshot();
     });
   });
 
   describe(".toDispatchWithPayload", () => {
     describe("strict", () => {
-      it("passes when the action dispatchs a mutation with the correct payload", () => {
+      it("passes when the action dispatchs a mutation with the correct payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.dispatch("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect.action(actions.foobar, { a: "b" }).toDispatchWithPayload(
+        await expect.action(actions.foobar, { a: "b" }).resolves.toDispatchWithPayload(
           "fizzbuzz",
           { a: "b" },
           true
         );
       });
-      it("fails when the action dispatchs the wrong mutation mutation with the correct payload", () => {
+      it("fails when the action dispatchs the wrong mutation mutation with the correct payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.dispatch("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect(() =>
-          expect.action(actions.foobar, { a: "b" }).toDispatchWithPayload(
+        await expect(async () =>
+          await expect.action(actions.foobar, { a: "b" }).resolves.toDispatchWithPayload(
             "foobar",
             { a: "b" },
             true
           )
-        ).toThrowErrorMatchingSnapshot();
+        ).rejects.toThrowErrorMatchingSnapshot();
       });
-      it("fails when the action dispatchs a mutation with the wrong payload", () => {
+      it("fails when the action dispatchs a mutation with the wrong payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.dispatch("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect(() =>
-          expect.action(actions.foobar, { a: "b" }).toDispatchWithPayload(
+        await expect(async () =>
+          await expect.action(actions.foobar, { a: "b" }).resolves.toDispatchWithPayload(
             "fizzbuzz",
             { c: "d" },
             true
           )
-        ).toThrowErrorMatchingSnapshot();
+        ).rejects.toThrowErrorMatchingSnapshot();
       });
     });
 
     describe("loose", () => {
-      it("passes when the action dispatchs a mutation with the correct payload", () => {
+      it("passes when the action dispatchs a mutation with the correct payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.dispatch("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect.action(actions.foobar, {
+        await expect.action(actions.foobar, {
           a: "b",
           c: "d",
-        }).toDispatchWithPayload("fizzbuzz", { a: "b" });
+        }).resolves.toDispatchWithPayload("fizzbuzz", { a: "b" });
       });
-      it("fails when the action dispatchs the wrong mutation mutation with the correct payload", () => {
+      it("fails when the action dispatchs the wrong mutation mutation with the correct payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.dispatch("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect(() =>
-          expect.action(actions.foobar, { a: "b" }).toDispatchWithPayload(
+        await expect(async () =>
+          await expect.action(actions.foobar, { a: "b" }).resolves.toDispatchWithPayload(
             "foobar",
             { a: "b" },
             true
           )
-        ).toThrowErrorMatchingSnapshot();
+        ).rejects.toThrowErrorMatchingSnapshot();
       });
-      it("fails when the action dispatchs a mutation with the wrong payload", () => {
+      it("fails when the action dispatchs a mutation with the wrong payload", async () => {
         const actions = {
-          foobar: (ctx, payload) => {
+          foobar: async (ctx, payload) => {
+            await Promise.resolve();
             ctx.dispatch("fizzbuzz", payload);
-            return Promise.resolve();
           },
         } as SyncAction;
 
-        expect(() =>
-          expect.action(actions.foobar, { a: "b" }).toDispatchWithPayload("fizzbuzz", {
+        await expect(async () =>
+          await expect.action(actions.foobar, { a: "b" }).resolves.toDispatchWithPayload("fizzbuzz", {
             c: "d",
           })
-        ).toThrowErrorMatchingSnapshot();
+        ).rejects.toThrowErrorMatchingSnapshot();
       });
     });
   });

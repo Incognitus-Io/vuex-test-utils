@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.0.1
+
+* Fix async failures
+* Remove jest-chain (it was causing async issues)
+
 ## Version 2.0.0
 
 * Migrate to supporting jest
