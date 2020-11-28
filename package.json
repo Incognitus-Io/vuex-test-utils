@@ -29,7 +29,7 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "prebuild": "rimraf dist .rpt2_cache Release",
     "build": "rollup -c build/rollup.config.js",
-    "postbuild": "mkdirp Release/types && copyfiles src/typings/**/* Release/types/ -u 2 && copyfiles dist/**/* Release/ && copyfiles package.json Release/ && copyfiles *.md Release/"
+    "postbuild": "mkdirp Release/types && copyfiles types/**/* Release/types/ -u 1 && copyfiles dist/**/* Release/ && copyfiles package.json Release/ && copyfiles *.md Release/"
   },
   "dependencies": {
     "deep-equal": "^2.0.3",

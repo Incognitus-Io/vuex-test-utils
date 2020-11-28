@@ -27,3 +27,13 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+    - if: contains(github.ref, 'tags') && matrix.node-version == '14.x'
+      name: Building release package
+      run: yarn build
+    - if: contains(github.ref, 'tags') && matrix.node-version == '14.x'
+      name: Publish to NPM
+      uses: JS-DevTools/npm-publish@v1
+      with:
+        token: ${{ secrets.NPM_TOKEN }}
+        access: public
+        package: ./Release/package.json
