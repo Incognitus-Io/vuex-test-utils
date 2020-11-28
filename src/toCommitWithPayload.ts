@@ -34,13 +34,11 @@ const predicate = (
         return false;
     }
 
-    if (strict) {
+    if (strict || Array.isArray(mutation.payload) || typeof mutation.payload !== 'object') {
         return deepEqual(mutation.payload, expectedPayload);
     }
 
-    const partialPayload = typeof mutation.payload === 'object'
-        ? pick(...Object.keys(expectedPayload))(mutation.payload)
-        : mutation.payload;
+    const partialPayload = pick(...Object.keys(expectedPayload))(mutation.payload);
     return deepEqual(partialPayload, expectedPayload);
 }
 

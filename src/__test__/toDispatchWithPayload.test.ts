@@ -93,6 +93,17 @@ describe('.toDispatchWithPayload', () => {
         action(actions.foobar, 98)
             .toDispatchWithPayload('primitive', 98);
     });
+
+    it('handles array types', () => {
+        const actions = {
+            foobar: (ctx, payload) => {
+                ctx.dispatch('array', payload)
+            }
+        };
+
+        action(actions.foobar, [1, 2, 3])
+            .toDispatchWithPayload('array', [1, 2, 3]);
+    });
 });
 
 describe('.not.toDispatchWithPayload', () => {
