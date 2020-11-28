@@ -22,7 +22,7 @@ jobs:
       env:
         CI: true
     - name: Testing/Coverage
-      run: yarn coverage
+      run: yarn coverage --color
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
