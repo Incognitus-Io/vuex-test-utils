@@ -23,7 +23,8 @@ jobs:
         CI: true
     - name: Testing/Coverage
       run: yarn coverage --color
-    - name: Coveralls
+    - if: matrix.node-version == '14.x'
+      name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
