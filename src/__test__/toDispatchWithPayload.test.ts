@@ -78,6 +78,21 @@ describe('.toDispatchWithPayload', () => {
             ).toThrowErrorMatchingSnapshot();
         });
     });
+
+    it('handles primitive types', () => {
+        const actions = {
+            foobar: (ctx, payload) => {
+                ctx.dispatch('primitive', payload)
+            }
+        };
+
+        action(actions.foobar, 'string')
+            .toDispatchWithPayload('primitive', 'string');
+        action(actions.foobar, true)
+            .toDispatchWithPayload('primitive', true);
+        action(actions.foobar, 98)
+            .toDispatchWithPayload('primitive', 98);
+    });
 });
 
 describe('.not.toDispatchWithPayload', () => {

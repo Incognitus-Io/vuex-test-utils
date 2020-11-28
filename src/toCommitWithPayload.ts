@@ -38,7 +38,9 @@ const predicate = (
         return deepEqual(mutation.payload, expectedPayload);
     }
 
-    const partialPayload = pick(...Object.keys(expectedPayload))(mutation.payload);
+    const partialPayload = typeof mutation.payload === 'object'
+        ? pick(...Object.keys(expectedPayload))(mutation.payload)
+        : mutation.payload;
     return deepEqual(partialPayload, expectedPayload);
 }
 

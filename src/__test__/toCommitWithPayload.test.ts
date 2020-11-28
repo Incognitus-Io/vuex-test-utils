@@ -78,6 +78,21 @@ describe('.toCommitWithPayload', () => {
             ).toThrowErrorMatchingSnapshot();
         });
     });
+
+    it('handles primitive types', () => {
+        const actions = {
+            foobar: (ctx, payload) => {
+                ctx.commit('primitive', payload)
+            }
+        };
+
+        action(actions.foobar, 'string')
+            .toCommitWithPayload('primitive', 'string');
+        action(actions.foobar, true)
+            .toCommitWithPayload('primitive', true);
+        action(actions.foobar, 98)
+            .toCommitWithPayload('primitive', 98);
+    });
 });
 
 describe('.not.toCommitWithPayload', () => {
