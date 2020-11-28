@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Release Library Asynchronous action commit Should fail when commit types do not match 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toCommit()[22m
+
+Expected to have been commited:
+ [32m\\"somthing not right\\"[39m
+ but received:
+ [31m[\\"foobar\\"][39m"
+`;
+
+exports[`Release Library Asynchronous action dispatch Should fail when dispatch types do not match 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatch()[22m
+
+Expected to have been dispatched:
+ [32m\\"somthing not right\\"[39m
+ but received:
+ [31m[\\"foobar\\"][39m"
+`;

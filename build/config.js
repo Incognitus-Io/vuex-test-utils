@@ -1,20 +1,20 @@
-import { uglify } from 'rollup-plugin-uglify'
+import { terser } from 'rollup-plugin-terser';
 
 export default {
   umd: {
     output: 'dist/umd/index.js',
     format: 'umd',
     module: 'esnext',
-    target: 'esnext',
+    target: 'es2020',
     env: 'development'
   },
   umdMin: {
     output: 'dist/umd/index.min.js',
     format: 'umd',
     module: 'esnext',
-    target: 'es5',
+    target: 'es2020',
     plugins: {
-      post: [uglify()]
+      post: [terser()]
     },
     env: 'production'
   },
@@ -22,13 +22,13 @@ export default {
     output: 'dist/esm/index.js',
     format: 'esm',
     module: 'esnext',
-    target: 'esnext',
+    target: 'es2020',
     genDts: true
   },
   cjs: {
     output: 'dist/cjs/index.js',
     format: 'cjs',
     module: 'esnext',
-    target: 'esnext'
+    target: 'es2020'
   },
 };

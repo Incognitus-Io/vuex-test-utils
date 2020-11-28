@@ -1,3 +1,0 @@
--r ts-node/register
-
-./src/**/__test__/*.spec.ts

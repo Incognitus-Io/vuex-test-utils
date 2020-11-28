@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.not.toDispatchAsRoot fails when the action dispatchs mutations 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).not.toDispatchAsRoot()[22m
+
+Expected to not have been dispatched as root:
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}[39m
+Received:
+ [31m[{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}][39m"
+`;
+
+exports[`.toDispatchAsRoot fails when the action dispatchs mutations but not as root 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchAsRoot()[22m
+
+Expected to have been dispatched as root:
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}[39m
+Received:
+ [31m[{\\"options\\": {\\"root\\": false}, \\"type\\": \\"1\\"}][39m"
+`;
+
+exports[`.toDispatchAsRoot fails when the action does not dispatchs mutations 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toDispatchAsRoot()[22m
+
+Expected to have been dispatched as root:
+ [32m{\\"options\\": {\\"root\\": true}, \\"type\\": \\"NotIt\\"}[39m
+Received:
+ [31m[{\\"options\\": {\\"root\\": true}, \\"type\\": \\"1\\"}][39m"
+`;
