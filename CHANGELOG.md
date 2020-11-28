@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.0.2
+* Fix `WithPayload` matchers when using primitive types
+
 ## Version 2.0.1
 
 * Fix async failures
