@@ -1,6 +1,7 @@
 # Vuex-Test-Utils
 
-![](https://github.com/Incognitus-Io/vuex-test-utils/workflows/Node%20CI/badge.svg?branch=master)  
+![](https://github.com/Incognitus-Io/vuex-test-utils/workflows/Node%20CI/badge.svg?branch=master) 
+[![Coverage Status](https://coveralls.io/repos/github/Incognitus-Io/vuex-test-utils/badge.svg)](https://coveralls.io/github/Incognitus-Io/vuex-test-utils)   
 This is a collection of test utilities for vuex.  For actions you can check if things are commited or dispatched, and what their payload was.
 
 ## Getting started
